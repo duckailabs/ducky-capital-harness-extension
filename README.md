@@ -9,11 +9,9 @@ Read-only Ethereum investigation skills packaged in the open Agent Skills format
 
 ## Install with OpenPond
 
-Once the repository is on GitHub, replace `<github-owner>` with the account or organization that published it:
-
 ```bash
-openpond extension preview <github-owner>/ducky-capital-skills
-openpond extension add <github-owner>/ducky-capital-skills
+openpond extension preview duckailabs/ducky-capital-skills
+openpond extension add duckailabs/ducky-capital-skills
 ```
 
 OpenPond installs the pack under `~/.openpond/extensions` and makes its skills available to the OpenPond harness. The repository does not require an OpenPond-specific manifest.
