@@ -9,7 +9,7 @@ Read-only Ethereum investigation skills packaged in the open Agent Skills format
 
 ## Install with OpenPond
 
-After publishing this repository to GitHub:
+Once the repository is on GitHub, replace `<github-owner>` with the account or organization that published it:
 
 ```bash
 openpond extension preview <github-owner>/ducky-capital-skills
@@ -25,6 +25,6 @@ $review-ethereum-transaction Review 0x… on Ethereum mainnet.
 $analyze-ethereum-bytecode Analyze 0x… at block 12345678 on Ethereum mainnet.
 ```
 
-The workflows use read-only RPC calls and work best when Foundry Cast and an appropriate archive-capable RPC endpoint are available. They never require a private key or wallet connection.
+The workflows start with web resources: Etherscan or the chain's canonical explorer for transactions, and Sourcify plus the explorer's verified-code view for contracts. Foundry Cast and an archive-capable RPC endpoint are optional tools for deeper traces and bytecode analysis.
 
 These skills produce technical research, not a formal security audit or financial advice.

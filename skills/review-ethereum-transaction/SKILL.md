@@ -19,8 +19,12 @@ Build an evidence-backed explanation of a published EVM transaction. Stay read-o
 ## Collect the evidence
 
 1. Validate that the hash is `0x` followed by 64 hexadecimal characters.
-2. Identify the chain and a trusted RPC endpoint. Ask one focused question if the chain cannot be inferred from user-provided context.
-3. Fetch the transaction and receipt. Prefer Foundry Cast when available:
+2. Identify the chain. Ask one focused question if the chain cannot be inferred from user-provided context.
+3. Start with the chain's canonical block explorer. For Ethereum mainnet, open `https://etherscan.io/tx/<TX_HASH>` directly. Avoid lookalike explorer domains reached through search results.
+4. Capture the status, block, timestamp, confirmations or finality indicator, sender, recipient or created contract, value, fee, gas, calldata, token transfers, internal transactions, and logs exposed by the explorer.
+5. Open every material contract on the same explorer. Check verified source, ABI, proxy implementation, contract labels, and decoded input or events. Treat labels as attribution claims rather than onchain proof.
+6. If the explorer view is insufficient, try a public transaction debugger such as `https://dashboard.tenderly.co/tx/<TX_HASH>` for a call trace, state changes, and decoded errors. State when a site requires sign-in, lacks the selected network, or cannot load the transaction.
+7. Use a trusted RPC endpoint for raw evidence when web views disagree, omit required fields, or cannot provide historical traces. If Foundry Cast is installed:
 
    ```bash
    cast chain-id --rpc-url "$ETH_RPC_URL"
@@ -28,11 +32,11 @@ Build an evidence-backed explanation of a published EVM transaction. Stay read-o
    cast receipt "$TX_HASH" --rpc-url "$ETH_RPC_URL" --json
    ```
 
-4. If the transaction exists but its receipt is null, report it as pending. If both are null, report “not found on the selected chain” rather than “invalid.”
-5. Capture the sender, recipient or creation address, nonce, value, transaction type, calldata, block, status, gas used, effective gas price, and logs. Convert values from raw units explicitly; retain the raw value beside any formatted amount.
-6. Fetch the containing block when timestamp, finality, or fee context matters.
+8. If the transaction exists but its receipt is null, report it as pending. If both are null, report “not found on the selected chain” rather than “invalid.”
+9. Capture the nonce and transaction type from RPC evidence when the web view omits them. Convert values from raw units explicitly; retain the raw value beside any formatted amount.
+10. Fetch the containing block when timestamp, finality, or fee context matters.
 
-Use standard JSON-RPC methods `eth_chainId`, `eth_getTransactionByHash`, `eth_getTransactionReceipt`, and `eth_getBlockByNumber` when Cast is unavailable.
+Use standard JSON-RPC methods `eth_chainId`, `eth_getTransactionByHash`, `eth_getTransactionReceipt`, and `eth_getBlockByNumber` when Cast is unavailable. Do not block the review merely because Cast or an archive RPC is unavailable; finish from the explorer evidence and disclose what could not be independently reproduced.
 
 ## Decode intent and execution
 
@@ -46,7 +50,7 @@ Use standard JSON-RPC methods `eth_chainId`, `eth_getTransactionByHash`, `eth_ge
 
    List competing signatures when a selector is ambiguous. Never present a four-byte lookup as proof.
 4. Decode receipt logs against verified event ABIs. Summarize token transfers, NFT movements, approvals, role changes, upgrades, ownership changes, and protocol-specific state changes.
-5. Replay the published transaction for a call trace when the RPC supports historical state:
+5. Use the explorer or public debugger trace first. Replay the published transaction locally when more detail is needed and the RPC supports historical state:
 
    ```bash
    cast run "$TX_HASH" --rpc-url "$ETH_RPC_URL" --decode-internal

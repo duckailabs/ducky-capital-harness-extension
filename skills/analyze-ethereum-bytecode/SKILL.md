@@ -24,7 +24,12 @@ Recover the strongest defensible description of deployed EVM behavior. Prefer ve
 ## Collect and verify
 
 1. Validate the address or hex bytecode and confirm chain ID.
-2. For an address, collect code, size, and hash at a stable block:
+2. Start with web verification for an address:
+   - Open `https://repo.sourcify.dev/<CHAIN_ID>/<ADDRESS>` and check whether Sourcify reports an exact match or match.
+   - Open the address on the chain's canonical explorer and inspect its verified-code, contract-creation, proxy, ABI, and read-only contract views. For Ethereum mainnet, use `https://etherscan.io/address/<ADDRESS>#code`.
+   - Compare the address, chain, implementation, compiler settings, and match status across sources. Do not treat a similarly named contract as the target.
+3. If no verified source is available, use a reputable web decompiler such as Dedaub when accessible. Treat decompiled output as a hypothesis and retain a link to the exact chain and address analyzed.
+4. Use RPC evidence when web sources conflict, historical bytecode matters, or the user requests reproducible low-level analysis. If Foundry Cast is installed, collect code, size, and hash at a stable block:
 
    ```bash
    cast chain-id --rpc-url "$ETH_RPC_URL"
@@ -33,20 +38,22 @@ Recover the strongest defensible description of deployed EVM behavior. Prefer ve
    cast codehash "$ADDRESS" --block "$BLOCK" --rpc-url "$ETH_RPC_URL"
    ```
 
-3. Query Sourcify v2 and the chain’s established explorer for verified source, ABI, compiler, and match status. Prefer an exact match over a non-exact match. Verification proves a source/bytecode relationship, not functional correctness.
-4. Record the deployed bytecode hash and verification result before interpreting source.
-5. Detect proxy patterns before analyzing apparent behavior. Check minimal proxies, EIP-1967 implementation and admin slots, beacon proxies, and diamond-style dispatch. Foundry can resolve common EIP-1967 cases:
+5. Query Sourcify v2 directly when its web view is unavailable: `https://sourcify.dev/server/v2/contract/<CHAIN_ID>/<ADDRESS>?fields=all`. Prefer an exact match over a non-exact match. Verification proves a source/bytecode relationship, not functional correctness.
+6. Record the deployed bytecode hash when available and the verification result before interpreting source.
+7. Detect proxy patterns before analyzing apparent behavior. Check minimal proxies, EIP-1967 implementation and admin slots, beacon proxies, and diamond-style dispatch. Foundry can resolve common EIP-1967 cases:
 
    ```bash
    cast implementation "$ADDRESS" --block "$BLOCK" --rpc-url "$ETH_RPC_URL"
    cast admin "$ADDRESS" --block "$BLOCK" --rpc-url "$ETH_RPC_URL"
    ```
 
-6. Follow the implementation recursively, but report the proxy, implementation, admin or beacon, block, and evidence separately. Do not analyze only the proxy shell and attribute that behavior to the full system.
+8. Follow the implementation recursively, but report the proxy, implementation, admin or beacon, block, and evidence separately. Do not analyze only the proxy shell and attribute that behavior to the full system.
+
+Do not block the analysis because Cast is unavailable. Complete the web-based verification, proxy, ABI, decompiler, and explorer review, then state which bytecode hashes, storage slots, or historical facts could not be independently reproduced by RPC.
 
 ## Dissect unverified code
 
-1. Disassemble runtime bytecode:
+1. Use the explorer's opcode or decompiler view first when it is available. Disassemble runtime bytecode locally when Cast is installed or raw bytecode was supplied:
 
    ```bash
    cast code "$ADDRESS" --block "$BLOCK" --rpc-url "$ETH_RPC_URL" --disassemble
