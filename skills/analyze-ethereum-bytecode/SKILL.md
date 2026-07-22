@@ -17,19 +17,17 @@ Recover the strongest defensible description of deployed EVM behavior. Prefer ve
 
 ## Choose the path
 
-- **Contract address:** collect runtime code at the requested block, resolve proxies, and check verified-source services.
+- **Contract address:** collect runtime code at the requested block, resolve proxies, and check the canonical explorer for verified source.
 - **Raw bytecode:** ask whether it is creation or runtime code if unclear; skip address-specific storage, admin, and verification checks.
 - **Transaction-created contract:** use the creation transaction for constructor inputs and the resulting address for runtime analysis.
 
 ## Collect and verify
 
 1. Validate the address or hex bytecode and confirm chain ID.
-2. Start with web verification for an address:
-   - Open `https://repo.sourcify.dev/<CHAIN_ID>/<ADDRESS>` and check whether Sourcify reports an exact match or match.
-   - Open the address on the chain's canonical explorer and inspect its verified-code, contract-creation, proxy, ABI, and read-only contract views. For Ethereum mainnet, use `https://etherscan.io/address/<ADDRESS>#code`.
-   - Compare the address, chain, implementation, compiler settings, and match status across sources. Do not treat a similarly named contract as the target.
-3. If no verified source is available, use a reputable web decompiler such as Dedaub when accessible. Treat decompiled output as a hypothesis and retain a link to the exact chain and address analyzed.
-4. Use RPC evidence when web sources conflict, historical bytecode matters, or the user requests reproducible low-level analysis. If Foundry Cast is installed, collect code, size, and hash at a stable block:
+2. Start with the address on the chain's canonical explorer. Inspect its verified code, compiler settings, ABI, creation transaction, proxy metadata, implementation link, read-only contract views, and deployed bytecode. For Ethereum mainnet, use `https://etherscan.io/address/<ADDRESS>#code`.
+3. Confirm that the explorer page matches the exact address and chain. Record whether the source is verified before interpreting it; a similarly named contract is not evidence about the target.
+4. If the source is unverified, copy the deployed runtime bytecode from the explorer and use any opcode view it provides. When the user supplied raw bytecode, analyze that input directly without requiring an external service.
+5. Use standard JSON-RPC only when the explorer omits the bytecode, historical state matters, or the user requests reproducible low-level evidence. The required method for deployed code is `eth_getCode`. If Foundry Cast is installed, use it as an optional RPC client to collect code, size, and hash at a stable block:
 
    ```bash
    cast chain-id --rpc-url "$ETH_RPC_URL"
@@ -38,9 +36,8 @@ Recover the strongest defensible description of deployed EVM behavior. Prefer ve
    cast codehash "$ADDRESS" --block "$BLOCK" --rpc-url "$ETH_RPC_URL"
    ```
 
-5. Query Sourcify v2 directly when its web view is unavailable: `https://sourcify.dev/server/v2/contract/<CHAIN_ID>/<ADDRESS>?fields=all`. Prefer an exact match over a non-exact match. Verification proves a source/bytecode relationship, not functional correctness.
-6. Record the deployed bytecode hash when available and the verification result before interpreting source.
-7. Detect proxy patterns before analyzing apparent behavior. Check minimal proxies, EIP-1967 implementation and admin slots, beacon proxies, and diamond-style dispatch. Foundry can resolve common EIP-1967 cases:
+6. Record the deployed bytecode hash when available and the explorer verification result before interpreting source. Verification proves a source/bytecode relationship, not functional correctness.
+7. Detect proxy patterns before analyzing apparent behavior. Check the explorer's proxy metadata, then inspect minimal-proxy bytecode, EIP-1967 implementation and admin slots, beacon proxies, and diamond-style dispatch when the evidence is available. Foundry can optionally resolve common EIP-1967 cases:
 
    ```bash
    cast implementation "$ADDRESS" --block "$BLOCK" --rpc-url "$ETH_RPC_URL"
@@ -49,17 +46,19 @@ Recover the strongest defensible description of deployed EVM behavior. Prefer ve
 
 8. Follow the implementation recursively, but report the proxy, implementation, admin or beacon, block, and evidence separately. Do not analyze only the proxy shell and attribute that behavior to the full system.
 
-Do not block the analysis because Cast is unavailable. Complete the web-based verification, proxy, ABI, decompiler, and explorer review, then state which bytecode hashes, storage slots, or historical facts could not be independently reproduced by RPC.
+Do not block the analysis because Cast or an RPC endpoint is unavailable. Complete the explorer, verified-source, proxy, ABI, and supplied-bytecode review, then state which bytecode hashes, storage slots, traces, or historical facts could not be independently reproduced.
 
 ## Dissect unverified code
 
-1. Use the explorer's opcode or decompiler view first when it is available. Disassemble runtime bytecode locally when Cast is installed or raw bytecode was supplied:
+1. Use the explorer's opcode view first when it is available. Disassemble runtime bytecode locally when Cast is installed:
 
    ```bash
    cast code "$ADDRESS" --block "$BLOCK" --rpc-url "$ETH_RPC_URL" --disassemble
    # or, for raw bytecode
    cast disassemble "$BYTECODE"
    ```
+
+   Without a disassembler, inspect supplied bytecode directly for the dispatcher, metadata trailer, `PUSH`-embedded selectors and addresses, proxy markers, and consequential opcodes. Reduce confidence for any control-flow conclusion that could not be fully disassembled.
 
 2. Extract apparent selectors and resolve possible signatures:
 
@@ -89,7 +88,7 @@ Bytecode generally cannot recover original comments, variable names, source stru
 Use this order:
 
 1. **Identity** — chain, address, block, code size, code hash, and bytecode kind.
-2. **Verification** — source provider, exact or non-exact match, compiler metadata, and confidence.
+2. **Verification** — explorer verification status, compiler metadata, and confidence.
 3. **Proxy topology** — proxy type, implementation, admin or beacon, and resolution evidence.
 4. **Behavior map** — verified functions or candidate selectors, dispatch paths, storage behavior, and external calls.
 5. **Privileged and dangerous capabilities** — upgrades, arbitrary calls, delegate calls, minting, sweeping, pausing, destruction, or access-control observations.

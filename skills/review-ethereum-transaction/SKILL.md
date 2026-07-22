@@ -23,8 +23,8 @@ Build an evidence-backed explanation of a published EVM transaction. Stay read-o
 3. Start with the chain's canonical block explorer. For Ethereum mainnet, open `https://etherscan.io/tx/<TX_HASH>` directly. Avoid lookalike explorer domains reached through search results.
 4. Capture the status, block, timestamp, confirmations or finality indicator, sender, recipient or created contract, value, fee, gas, calldata, token transfers, internal transactions, and logs exposed by the explorer.
 5. Open every material contract on the same explorer. Check verified source, ABI, proxy implementation, contract labels, and decoded input or events. Treat labels as attribution claims rather than onchain proof.
-6. If the explorer view is insufficient, try a public transaction debugger such as `https://dashboard.tenderly.co/tx/<TX_HASH>` for a call trace, state changes, and decoded errors. State when a site requires sign-in, lacks the selected network, or cannot load the transaction.
-7. Use a trusted RPC endpoint for raw evidence when web views disagree, omit required fields, or cannot provide historical traces. If Foundry Cast is installed:
+6. Use the explorer's internal-transactions, logs, decoded-input, state-change, and error views when available. State which evidence the explorer does not expose.
+7. Use a trusted standard JSON-RPC endpoint for raw evidence only when the explorer is insufficient, sources disagree, or historical traces matter. If Foundry Cast is installed, use it as an optional RPC client:
 
    ```bash
    cast chain-id --rpc-url "$ETH_RPC_URL"
@@ -50,7 +50,7 @@ Use standard JSON-RPC methods `eth_chainId`, `eth_getTransactionByHash`, `eth_ge
 
    List competing signatures when a selector is ambiguous. Never present a four-byte lookup as proof.
 4. Decode receipt logs against verified event ABIs. Summarize token transfers, NFT movements, approvals, role changes, upgrades, ownership changes, and protocol-specific state changes.
-5. Use the explorer or public debugger trace first. Replay the published transaction locally when more detail is needed and the RPC supports historical state:
+5. Use the explorer trace first when it is available. Replay the published transaction locally when more detail is needed and the RPC supports historical state:
 
    ```bash
    cast run "$TX_HASH" --rpc-url "$ETH_RPC_URL" --decode-internal

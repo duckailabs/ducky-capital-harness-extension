@@ -25,6 +25,6 @@ $review-ethereum-transaction Review 0x… on Ethereum mainnet.
 $analyze-ethereum-bytecode Analyze 0x… at block 12345678 on Ethereum mainnet.
 ```
 
-The workflows start with web resources: Etherscan or the chain's canonical explorer for transactions, and Sourcify plus the explorer's verified-code view for contracts. Foundry Cast and an archive-capable RPC endpoint are optional tools for deeper traces and bytecode analysis.
+The workflows start with Etherscan or the selected chain's canonical explorer. No separate debugger, decompiler, or verification service is required. Foundry Cast and an archive-capable RPC endpoint are optional tools for deeper traces and bytecode analysis.
 
 These skills produce technical research, not a formal security audit or financial advice.
