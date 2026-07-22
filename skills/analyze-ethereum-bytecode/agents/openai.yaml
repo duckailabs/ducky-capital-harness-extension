@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Ethereum Bytecode"
+  short_description: "Dissect EVM bytecode and contract behavior"
+  default_prompt: "Use $analyze-ethereum-bytecode to inspect this contract bytecode and explain its behavior and risks."

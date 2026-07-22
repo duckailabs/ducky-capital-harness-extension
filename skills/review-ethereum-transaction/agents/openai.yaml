@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Ethereum Transaction"
+  short_description: "Explain an Ethereum transaction safely"
+  default_prompt: "Use $review-ethereum-transaction to investigate this transaction hash and summarize what happened."

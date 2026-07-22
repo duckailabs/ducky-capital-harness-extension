@@ -1,0 +1,71 @@
+---
+name: review-ethereum-transaction
+description: Investigate an Ethereum or EVM transaction hash and explain what happened using read-only RPC data, receipts, traces, verified ABIs, logs, asset movements, approvals, and risk indicators. Use when a user supplies a transaction hash, asks why a transaction succeeded or failed, wants calldata or events decoded, needs transfers and approvals summarized, or wants a concise transaction-forensics report.
+---
+
+# Review Ethereum Transaction
+
+Build an evidence-backed explanation of a published EVM transaction. Stay read-only and distinguish confirmed facts from decoded interpretations.
+
+## Guardrails
+
+- Never request a seed phrase, private key, signing approval, or wallet connection.
+- Never broadcast, replace, cancel, or replay a transaction unless the user separately and explicitly requests that action.
+- Confirm the network or chain ID. A transaction hash alone does not identify a chain.
+- Treat explorer labels, four-byte signatures, token symbols, and unverified ABIs as hints until corroborated.
+- State the block number or tag used for every historical conclusion.
+- Do not call a transaction or contract safe. Report observable behavior, risks, and unknowns.
+
+## Collect the evidence
+
+1. Validate that the hash is `0x` followed by 64 hexadecimal characters.
+2. Identify the chain and a trusted RPC endpoint. Ask one focused question if the chain cannot be inferred from user-provided context.
+3. Fetch the transaction and receipt. Prefer Foundry Cast when available:
+
+   ```bash
+   cast chain-id --rpc-url "$ETH_RPC_URL"
+   cast tx "$TX_HASH" --rpc-url "$ETH_RPC_URL" --json
+   cast receipt "$TX_HASH" --rpc-url "$ETH_RPC_URL" --json
+   ```
+
+4. If the transaction exists but its receipt is null, report it as pending. If both are null, report “not found on the selected chain” rather than “invalid.”
+5. Capture the sender, recipient or creation address, nonce, value, transaction type, calldata, block, status, gas used, effective gas price, and logs. Convert values from raw units explicitly; retain the raw value beside any formatted amount.
+6. Fetch the containing block when timestamp, finality, or fee context matters.
+
+Use standard JSON-RPC methods `eth_chainId`, `eth_getTransactionByHash`, `eth_getTransactionReceipt`, and `eth_getBlockByNumber` when Cast is unavailable.
+
+## Decode intent and execution
+
+1. Classify the transaction as an ETH transfer, contract call, contract creation, blob transaction, or delegated-account transaction when the fields establish that classification.
+2. For contract calls, resolve verified source and ABI for the exact chain and address first. Resolve proxies to the implementation used at the transaction block before interpreting logic.
+3. Decode calldata with the verified ABI. If no verified ABI exists, use selector databases only as candidates:
+
+   ```bash
+   cast 4byte-calldata "$INPUT"
+   ```
+
+   List competing signatures when a selector is ambiguous. Never present a four-byte lookup as proof.
+4. Decode receipt logs against verified event ABIs. Summarize token transfers, NFT movements, approvals, role changes, upgrades, ownership changes, and protocol-specific state changes.
+5. Replay the published transaction for a call trace when the RPC supports historical state:
+
+   ```bash
+   cast run "$TX_HASH" --rpc-url "$ETH_RPC_URL" --decode-internal
+   ```
+
+   If replay fails because archive state or trace methods are unavailable, say so and continue from the receipt and verified source.
+6. Compare top-level intent with internal execution. Highlight delegate calls, newly created contracts, unexpected recipients, broad token approvals, ownership or admin changes, and transfers that only appear in internal calls or logs.
+7. For failures, report the receipt status and the best available revert evidence. Do not invent a revert reason from status alone.
+
+## Report the result
+
+Use this order:
+
+1. **One-line outcome** — plain-language result and whether it succeeded, failed, or remains pending.
+2. **Transaction facts** — chain, hash, block, timestamp, from, to or created contract, value, fee, gas, and finality if checked.
+3. **Decoded action** — function, arguments, trace summary, and important internal calls.
+4. **Asset and permission changes** — transfers, mints, burns, approvals, roles, ownership, and upgrades.
+5. **Risk signals** — surprising behavior, unlimited approvals, proxy changes, unverified code, ambiguous decoding, or inconsistent labels.
+6. **Unknowns and confidence** — missing archive data, unverified ABIs, unresolved proxies, or other limits.
+7. **Evidence** — RPC methods, commands, contract addresses, block number, and direct chain-specific explorer links used.
+
+Keep conclusions proportional to the evidence. A successful receipt proves EVM execution did not revert; it does not prove the user received the economic outcome they expected.
