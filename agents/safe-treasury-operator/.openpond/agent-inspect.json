@@ -1,0 +1,643 @@
+{
+  "schemaVersion": 1,
+  "schema": "openpond.agent.inspect.v1",
+  "artifactSchemas": {
+    "action": "openpond.agent.action.v1",
+    "actionRegistry": "openpond.agent.action-registry.v1",
+    "agent": "openpond.agent.local-agent.v1",
+    "artifactIndex": "openpond.agent.artifact-index.v1",
+    "agentManifest": "openpond.agent.manifest.v1",
+    "channel": "openpond.agent.channel.v1",
+    "editablePolicy": "openpond.agent.editable-policy.v1",
+    "envSecret": "openpond.agent.env-secret.v1",
+    "eval": "openpond.agent.eval.v1",
+    "evalResults": "openpond.agent.eval-results.v1",
+    "inspect": "openpond.agent.inspect.v1",
+    "instructions": "openpond.agent.instructions.v1",
+    "integration": "openpond.agent.integration.v1",
+    "intentRouter": "openpond.agent.intent-router.v1",
+    "mcpClientConnection": "openpond.agent.mcp-client-connection.v1",
+    "remoteAgent": "openpond.agent.remote-agent.v1",
+    "runtimeManifest": "openpond.runtime.manifest.v1",
+    "runtimeBridge": "openpond.agent.runtime-bridge.v1",
+    "schedule": "openpond.agent.schedule.v1",
+    "skill": "openpond.agent.skill.v1",
+    "tool": "openpond.agent.tool.v1",
+    "trace": "openpond.agent.trace.v1",
+    "validatorReport": "openpond.agent.validation.v1",
+    "volume": "openpond.agent.volume.v1",
+    "workflow": "openpond.agent.workflow.v1"
+  },
+  "command": "openpond agent inspect --json",
+  "packageCommand": "openpond-agent inspect --json",
+  "sourceOfTruth": "agent-source",
+  "project": {
+    "name": "safe-treasury-operator",
+    "version": "0.1.0",
+    "useCase": "safe-treasury-operations",
+    "description": "Inspect Safes, construct canonical multisig transactions, monitor confirmations, and publish externally signed proposals."
+  },
+  "agent": {
+    "id": "safe-treasury-operator",
+    "defaultAction": "chat",
+    "manifestHash": "82d67ccc146e8decb237ae47f49b5ccbf16b1155702788dc0e865be4673d8340"
+  },
+  "actionCatalog": [
+    {
+      "id": "chat",
+      "name": "chat",
+      "label": "Chat",
+      "description": "Explain the Safe Treasury Operator's explicit action surface.",
+      "visibility": "default",
+      "implementation": {
+        "type": "intent-router",
+        "routerId": "chat-router"
+      },
+      "inputSchema": null,
+      "outputSchema": null,
+      "approvalPolicy": {
+        "mode": "never",
+        "reason": "Read-only action discovery."
+      },
+      "artifactPolicy": {
+        "outputArtifacts": [],
+        "persistRunSummary": true,
+        "persistTrace": true
+      },
+      "setupRequirements": [],
+      "mcp": {
+        "enabled": false
+      },
+      "schedulePolicy": {
+        "enabled": false,
+        "allowAdHoc": true
+      },
+      "trace": {
+        "name": "chat",
+        "namespace": "actions"
+      },
+      "invokesModel": true
+    },
+    {
+      "id": "inspect-safe",
+      "name": "inspect-safe",
+      "label": "Inspect Safe",
+      "description": "Read owners, threshold, nonce, modules, guard, version, and native balance from a deployed Safe.",
+      "visibility": "end_user",
+      "implementation": {
+        "type": "workflow",
+        "workflowId": "inspect-safe"
+      },
+      "inputSchema": "SafeInspectInput",
+      "outputSchema": null,
+      "approvalPolicy": {
+        "mode": "never",
+        "reason": "Read-only RPC calls."
+      },
+      "artifactPolicy": {
+        "outputArtifacts": [
+          "artifacts/safe-snapshot.json"
+        ],
+        "persistRunSummary": true,
+        "persistTrace": true
+      },
+      "setupRequirements": [],
+      "mcp": {
+        "enabled": false
+      },
+      "schedulePolicy": {
+        "enabled": false,
+        "allowAdHoc": true
+      },
+      "trace": {
+        "name": "inspect-safe",
+        "namespace": "actions"
+      },
+      "invokesModel": false
+    },
+    {
+      "id": "build-safe-transaction",
+      "name": "build-safe-transaction",
+      "label": "Build Safe Transaction",
+      "description": "Build an unsigned Safe transaction and canonical Safe transaction hash through Protocol Kit.",
+      "visibility": "end_user",
+      "implementation": {
+        "type": "workflow",
+        "workflowId": "build-safe-transaction"
+      },
+      "inputSchema": "SafeBuildInput",
+      "outputSchema": null,
+      "approvalPolicy": {
+        "mode": "never",
+        "reason": "Constructs an unsigned artifact without publishing it."
+      },
+      "artifactPolicy": {
+        "outputArtifacts": [
+          "artifacts/safe-transaction-plan.json"
+        ],
+        "persistRunSummary": true,
+        "persistTrace": true
+      },
+      "setupRequirements": [],
+      "mcp": {
+        "enabled": false
+      },
+      "schedulePolicy": {
+        "enabled": false,
+        "allowAdHoc": true
+      },
+      "trace": {
+        "name": "build-safe-transaction",
+        "namespace": "actions"
+      },
+      "invokesModel": false
+    },
+    {
+      "id": "safe-transaction-status",
+      "name": "safe-transaction-status",
+      "label": "Safe Transaction Status",
+      "description": "Read proposal, confirmation, and execution status from a Safe Transaction Service.",
+      "visibility": "end_user",
+      "implementation": {
+        "type": "workflow",
+        "workflowId": "safe-transaction-status"
+      },
+      "inputSchema": "SafeStatusInput",
+      "outputSchema": null,
+      "approvalPolicy": {
+        "mode": "never",
+        "reason": "Read-only Transaction Service request."
+      },
+      "artifactPolicy": {
+        "outputArtifacts": [
+          "artifacts/safe-transaction-status.json"
+        ],
+        "persistRunSummary": true,
+        "persistTrace": true
+      },
+      "setupRequirements": [],
+      "mcp": {
+        "enabled": false
+      },
+      "schedulePolicy": {
+        "enabled": false,
+        "allowAdHoc": true
+      },
+      "trace": {
+        "name": "safe-transaction-status",
+        "namespace": "actions"
+      },
+      "invokesModel": false
+    },
+    {
+      "id": "propose-safe-transaction",
+      "name": "propose-safe-transaction",
+      "label": "Propose Safe Transaction",
+      "description": "Publish an externally signed and hash-verified Safe proposal; this does not execute it.",
+      "visibility": "end_user",
+      "implementation": {
+        "type": "workflow",
+        "workflowId": "propose-safe-transaction"
+      },
+      "inputSchema": "SafeProposeInput",
+      "outputSchema": null,
+      "approvalPolicy": {
+        "mode": "always",
+        "reason": "Publishes a signed proposal to a Safe Transaction Service."
+      },
+      "artifactPolicy": {
+        "outputArtifacts": [
+          "artifacts/safe-proposal-receipt.json"
+        ],
+        "persistRunSummary": true,
+        "persistTrace": true
+      },
+      "setupRequirements": [],
+      "mcp": {
+        "enabled": false
+      },
+      "schedulePolicy": {
+        "enabled": false,
+        "allowAdHoc": false
+      },
+      "trace": {
+        "name": "propose-safe-transaction",
+        "namespace": "actions"
+      },
+      "invokesModel": false
+    }
+  ],
+  "mcpExports": [],
+  "providerSupport": [
+    {
+      "id": "openpond_chat",
+      "setupStatus": "ready",
+      "setupRequirements": [],
+      "capabilities": [],
+      "enabledByDefault": false,
+      "responseRendering": {
+        "kind": "function",
+        "input": "AgentChatResult",
+        "output": "Record<string, unknown>",
+        "supportedFields": [
+          "text",
+          "files",
+          "artifactRefs",
+          "metadata"
+        ]
+      }
+    }
+  ],
+  "modelPolicy": {
+    "provider": "openpond-managed",
+    "required": false
+  },
+  "implementationRefs": {
+    "agents": [],
+    "remoteAgents": [],
+    "workflows": [
+      {
+        "id": "safe-chat",
+        "description": "Explain the Safe Treasury Operator action surface without performing writes."
+      },
+      {
+        "id": "inspect-safe",
+        "description": "Read current Safe owners, threshold, nonce, modules, guard, version, and native balance."
+      },
+      {
+        "id": "build-safe-transaction",
+        "description": "Build an unsigned Safe transaction and canonical Safe transaction hash."
+      },
+      {
+        "id": "safe-transaction-status",
+        "description": "Read Safe Transaction Service proposal, confirmation, and execution status."
+      },
+      {
+        "id": "propose-safe-transaction",
+        "description": "Verify and publish an externally signed Safe proposal to a Safe Transaction Service."
+      }
+    ],
+    "tools": [],
+    "connections": []
+  },
+  "sourceLayout": {
+    "root": ".",
+    "agentConfig": "agent/agent.ts",
+    "manifestMode": "typescript",
+    "extendsManifest": null,
+    "openpondYaml": null,
+    "actions": null,
+    "legacyActions": null,
+    "agents": null,
+    "remoteAgents": null,
+    "connections": null,
+    "editable": null,
+    "workflows": null,
+    "channels": null,
+    "tools": null,
+    "evals": null,
+    "volumes": null,
+    "integrations": null,
+    "schedules": null
+  },
+  "generatedArtifacts": {
+    "inspectJson": ".openpond/agent-inspect.json",
+    "agentManifestJson": ".openpond/agent-manifest.json",
+    "actionRegistryJson": ".openpond/action-registry.json",
+    "runtimeManifestPreviewYaml": ".openpond/openpond-manifest.preview.yaml",
+    "validatorReport": ".openpond/validator-report.md",
+    "evalResultsJson": ".openpond/eval-results.json",
+    "traces": ".openpond/traces"
+  },
+  "runtimeManifest": ".openpond/openpond-manifest.preview.yaml",
+  "editable": {
+    "schema": "openpond.agent.editable-policy.v1",
+    "kind": "editable",
+    "enabled": true,
+    "backend": "openpond-coding-work-item",
+    "runtimeEnvironmentId": "openpond-coding-core-v1",
+    "sourceOfTruth": "agent-source",
+    "policyDiscovery": {
+      "command": "openpond agent inspect --json",
+      "runAfter": "source-materialized"
+    },
+    "allowedPaths": [
+      "agent/**",
+      "src/**",
+      "package.json",
+      "tsconfig.json"
+    ],
+    "requiredChecks": [
+      "pnpm typecheck",
+      "pnpm agent:build",
+      "pnpm agent:validate",
+      "pnpm agent:eval"
+    ],
+    "defaultResultMode": "patch_only"
+  },
+  "capabilities": {
+    "actions": [
+      "chat",
+      "inspect-safe",
+      "build-safe-transaction",
+      "safe-transaction-status",
+      "propose-safe-transaction"
+    ],
+    "agents": [],
+    "remoteAgents": [],
+    "connections": [],
+    "channels": [
+      "openpond_chat"
+    ],
+    "tools": [],
+    "workflows": [
+      "safe-chat",
+      "inspect-safe",
+      "build-safe-transaction",
+      "safe-transaction-status",
+      "propose-safe-transaction"
+    ],
+    "schedules": [],
+    "evals": [
+      "safe-chat-has-no-write-side-effect"
+    ],
+    "volumes": [],
+    "env": [
+      "SAFE_API_KEY"
+    ],
+    "integrations": []
+  },
+  "setup": {
+    "channels": [
+      {
+        "id": "openpond_chat",
+        "targetAction": "chat",
+        "requiredConnections": [],
+        "capabilities": [],
+        "enabledByDefault": false,
+        "setupRequirements": [],
+        "setupStatus": "ready"
+      }
+    ],
+    "integrations": [],
+    "connections": [],
+    "envRefs": [
+      {
+        "schema": "openpond.agent.env-secret.v1",
+        "kind": "env",
+        "name": "SAFE_API_KEY",
+        "required": false,
+        "secret": true,
+        "description": "Optional Safe Transaction Service API key stored in OpenPond secret storage."
+      }
+    ],
+    "volumes": [],
+    "schedules": []
+  },
+  "inputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+      "prompt": {
+        "type": "string"
+      },
+      "channel": {
+        "type": "string"
+      }
+    }
+  },
+  "inputSchemas": {
+    "SafeInspectInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rpcUrl",
+        "chainId",
+        "safeAddress"
+      ],
+      "properties": {
+        "rpcUrl": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chainId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "safeAddress": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{40}$"
+        }
+      }
+    },
+    "SafeBuildInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rpcUrl",
+        "chainId",
+        "safeAddress",
+        "transactions"
+      ],
+      "properties": {
+        "rpcUrl": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chainId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "safeAddress": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{40}$"
+        },
+        "nonce": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "allowDelegateCall": {
+          "type": "boolean"
+        },
+        "transactions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "to",
+              "value",
+              "data"
+            ],
+            "properties": {
+              "to": {
+                "type": "string",
+                "pattern": "^0x[0-9a-fA-F]{40}$"
+              },
+              "value": {
+                "type": "string",
+                "pattern": "^[0-9]+$"
+              },
+              "data": {
+                "type": "string",
+                "pattern": "^0x([0-9a-fA-F]{2})*$"
+              },
+              "operation": {
+                "type": "integer",
+                "enum": [
+                  0,
+                  1
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "SafeStatusInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chainId",
+        "safeTxHash"
+      ],
+      "properties": {
+        "chainId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "safeTxHash": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{64}$"
+        },
+        "transactionServiceUrl": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "SafeProposeInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rpcUrl",
+        "chainId",
+        "safeAddress",
+        "safeTransactionData",
+        "safeTxHash",
+        "senderAddress",
+        "senderSignature"
+      ],
+      "properties": {
+        "rpcUrl": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chainId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "safeAddress": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{40}$"
+        },
+        "safeTxHash": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{64}$"
+        },
+        "senderAddress": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{40}$"
+        },
+        "senderSignature": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]+$"
+        },
+        "origin": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "transactionServiceUrl": {
+          "type": "string",
+          "minLength": 1
+        },
+        "safeTransactionData": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "to",
+            "value",
+            "data",
+            "operation",
+            "safeTxGas",
+            "baseGas",
+            "gasPrice",
+            "gasToken",
+            "refundReceiver",
+            "nonce"
+          ],
+          "properties": {
+            "to": {
+              "type": "string",
+              "pattern": "^0x[0-9a-fA-F]{40}$"
+            },
+            "value": {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            },
+            "data": {
+              "type": "string",
+              "pattern": "^0x([0-9a-fA-F]{2})*$"
+            },
+            "operation": {
+              "type": "integer",
+              "enum": [
+                0,
+                1
+              ]
+            },
+            "safeTxGas": {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            },
+            "baseGas": {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            },
+            "gasPrice": {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            },
+            "gasToken": {
+              "type": "string",
+              "pattern": "^0x[0-9a-fA-F]{40}$"
+            },
+            "refundReceiver": {
+              "type": "string",
+              "pattern": "^0x[0-9a-fA-F]{40}$"
+            },
+            "nonce": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  "validation": {
+    "declaredCommands": [
+      "node -e \"import('@safe-global/protocol-kit')\"",
+      "node -e \"import('@safe-global/api-kit')\"",
+      "node -e \"import('viem')\""
+    ],
+    "requiredChecks": [
+      "pnpm typecheck",
+      "pnpm agent:build",
+      "pnpm agent:validate",
+      "pnpm agent:eval"
+    ]
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "schema": "openpond.agent.artifact-index.v1",
+  "artifactSchemas": {
+    "action": "openpond.agent.action.v1",
+    "actionRegistry": "openpond.agent.action-registry.v1",
+    "agent": "openpond.agent.local-agent.v1",
+    "artifactIndex": "openpond.agent.artifact-index.v1",
+    "agentManifest": "openpond.agent.manifest.v1",
+    "channel": "openpond.agent.channel.v1",
+    "editablePolicy": "openpond.agent.editable-policy.v1",
+    "envSecret": "openpond.agent.env-secret.v1",
+    "eval": "openpond.agent.eval.v1",
+    "evalResults": "openpond.agent.eval-results.v1",
+    "inspect": "openpond.agent.inspect.v1",
+    "instructions": "openpond.agent.instructions.v1",
+    "integration": "openpond.agent.integration.v1",
+    "intentRouter": "openpond.agent.intent-router.v1",
+    "mcpClientConnection": "openpond.agent.mcp-client-connection.v1",
+    "remoteAgent": "openpond.agent.remote-agent.v1",
+    "runtimeManifest": "openpond.runtime.manifest.v1",
+    "runtimeBridge": "openpond.agent.runtime-bridge.v1",
+    "schedule": "openpond.agent.schedule.v1",
+    "skill": "openpond.agent.skill.v1",
+    "tool": "openpond.agent.tool.v1",
+    "trace": "openpond.agent.trace.v1",
+    "validatorReport": "openpond.agent.validation.v1",
+    "volume": "openpond.agent.volume.v1",
+    "workflow": "openpond.agent.workflow.v1"
+  },
+  "project": {
+    "name": "relay-cross-chain-operator",
+    "version": "0.1.0"
+  },
+  "artifactDir": ".openpond",
+  "entries": [
+    {
+      "path": ".openpond/artifact-index.json",
+      "kind": "artifact-index",
+      "schema": "openpond.agent.artifact-index.v1",
+      "format": "json"
+    },
+    {
+      "path": ".openpond/agent-manifest.json",
+      "kind": "agent-manifest",
+      "schema": "openpond.agent.manifest.v1",
+      "format": "json"
+    },
+    {
+      "path": ".openpond/action-registry.json",
+      "kind": "action-registry",
+      "schema": "openpond.agent.action-registry.v1",
+      "format": "json"
+    },
+    {
+      "path": ".openpond/agent-inspect.json",
+      "kind": "inspect",
+      "schema": "openpond.agent.inspect.v1",
+      "format": "json"
+    },
+    {
+      "path": ".openpond/openpond-manifest.preview.yaml",
+      "kind": "runtime-manifest-preview",
+      "schema": "openpond.runtime.manifest.v1",
+      "format": "yaml"
+    },
+    {
+      "path": ".openpond/runtime-bridge.mjs",
+      "kind": "runtime-bridge",
+      "schema": "openpond.agent.runtime-bridge.v1",
+      "format": "javascript"
+    },
+    {
+      "path": ".openpond/validator-report.md",
+      "kind": "validator-report",
+      "schema": "openpond.agent.validation.v1",
+      "format": "markdown"
+    },
+    {
+      "path": ".openpond/prompts/instructions.md",
+      "kind": "instructions",
+      "schema": "openpond.agent.instructions.v1",
+      "format": "markdown"
+    },
+    {
+      "path": ".openpond/eval-results.json",
+      "kind": "eval-results",
+      "schema": "openpond.agent.eval-results.v1",
+      "format": "json"
+    },
+    {
+      "path": ".openpond/traces/relay-chat-has-no-write-side-effect-1784823393562.jsonl",
+      "kind": "trace-jsonl",
+      "schema": "openpond.agent.trace.v1",
+      "format": "jsonl"
+    }
+  ]
+}

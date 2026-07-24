@@ -1,0 +1,22 @@
+{
+  "name": "@ducky-capital/relay-cross-chain-operator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@relayprotocol/relay-sdk": "7.0.0",
+    "openpond-agent-sdk": "file:../../../openpond/packages/agent-sdk",
+    "viem": "2.55.8"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "agent:inspect": "openpond-agent inspect --json",
+    "agent:build": "openpond-agent build",
+    "agent:validate": "openpond-agent validate --json",
+    "agent:eval": "openpond-agent eval --json",
+    "typecheck": "tsc --noEmit"
+  }
+}

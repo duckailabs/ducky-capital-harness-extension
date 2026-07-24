@@ -1,0 +1,730 @@
+{
+  "schemaVersion": 1,
+  "schema": "openpond.agent.inspect.v1",
+  "artifactSchemas": {
+    "action": "openpond.agent.action.v1",
+    "actionRegistry": "openpond.agent.action-registry.v1",
+    "agent": "openpond.agent.local-agent.v1",
+    "artifactIndex": "openpond.agent.artifact-index.v1",
+    "agentManifest": "openpond.agent.manifest.v1",
+    "channel": "openpond.agent.channel.v1",
+    "editablePolicy": "openpond.agent.editable-policy.v1",
+    "envSecret": "openpond.agent.env-secret.v1",
+    "eval": "openpond.agent.eval.v1",
+    "evalResults": "openpond.agent.eval-results.v1",
+    "inspect": "openpond.agent.inspect.v1",
+    "instructions": "openpond.agent.instructions.v1",
+    "integration": "openpond.agent.integration.v1",
+    "intentRouter": "openpond.agent.intent-router.v1",
+    "mcpClientConnection": "openpond.agent.mcp-client-connection.v1",
+    "remoteAgent": "openpond.agent.remote-agent.v1",
+    "runtimeManifest": "openpond.runtime.manifest.v1",
+    "runtimeBridge": "openpond.agent.runtime-bridge.v1",
+    "schedule": "openpond.agent.schedule.v1",
+    "skill": "openpond.agent.skill.v1",
+    "tool": "openpond.agent.tool.v1",
+    "trace": "openpond.agent.trace.v1",
+    "validatorReport": "openpond.agent.validation.v1",
+    "volume": "openpond.agent.volume.v1",
+    "workflow": "openpond.agent.workflow.v1"
+  },
+  "command": "openpond agent inspect --json",
+  "packageCommand": "openpond-agent inspect --json",
+  "sourceOfTruth": "agent-source",
+  "project": {
+    "name": "relay-cross-chain-operator",
+    "version": "0.1.0",
+    "useCase": "relay-cross-chain-routing-and-guarded-broadcast",
+    "description": "Quote Relay routes, review each cross-chain step, broadcast exact signed EVM steps, and monitor destination completion."
+  },
+  "agent": {
+    "id": "relay-cross-chain-operator",
+    "defaultAction": "chat",
+    "manifestHash": "5e97f4ebf3207d7ef2a5e1c50c2dcba49b6226f0c956949ea6cb463764c26138"
+  },
+  "actionCatalog": [
+    {
+      "id": "chat",
+      "name": "chat",
+      "label": "Chat",
+      "description": "Explain the Relay Cross-Chain Operator's explicit actions.",
+      "visibility": "default",
+      "implementation": {
+        "type": "intent-router",
+        "routerId": "chat-router"
+      },
+      "inputSchema": null,
+      "outputSchema": null,
+      "approvalPolicy": {
+        "mode": "never",
+        "reason": "Read-only action discovery."
+      },
+      "artifactPolicy": {
+        "outputArtifacts": [],
+        "persistRunSummary": true,
+        "persistTrace": true
+      },
+      "setupRequirements": [],
+      "mcp": {
+        "enabled": false
+      },
+      "schedulePolicy": {
+        "enabled": false,
+        "allowAdHoc": true
+      },
+      "trace": {
+        "name": "chat",
+        "namespace": "actions"
+      },
+      "invokesModel": true
+    },
+    {
+      "id": "quote-relay-transfer",
+      "name": "quote-relay-transfer",
+      "label": "Quote Relay Transfer",
+      "description": "Request an unsigned exact-input EVM cross-chain quote through the Relay SDK.",
+      "visibility": "end_user",
+      "implementation": {
+        "type": "workflow",
+        "workflowId": "quote-relay-transfer"
+      },
+      "inputSchema": "RelayQuoteInput",
+      "outputSchema": null,
+      "approvalPolicy": {
+        "mode": "never",
+        "reason": "Read-only quote request without a wallet."
+      },
+      "artifactPolicy": {
+        "outputArtifacts": [
+          "artifacts/relay-quote.json"
+        ],
+        "persistRunSummary": true,
+        "persistTrace": true
+      },
+      "setupRequirements": [],
+      "mcp": {
+        "enabled": false
+      },
+      "schedulePolicy": {
+        "enabled": false,
+        "allowAdHoc": true
+      },
+      "trace": {
+        "name": "quote-relay-transfer",
+        "namespace": "actions"
+      },
+      "invokesModel": false
+    },
+    {
+      "id": "review-relay-quote",
+      "name": "review-relay-quote",
+      "label": "Review Relay Quote",
+      "description": "Verify and summarize a quote's hash, fees, steps, request IDs, and expiry.",
+      "visibility": "end_user",
+      "implementation": {
+        "type": "workflow",
+        "workflowId": "review-relay-quote"
+      },
+      "inputSchema": "RelayReviewInput",
+      "outputSchema": null,
+      "approvalPolicy": {
+        "mode": "never",
+        "reason": "Pure validation of a supplied quote artifact."
+      },
+      "artifactPolicy": {
+        "outputArtifacts": [
+          "artifacts/relay-quote-review.json"
+        ],
+        "persistRunSummary": true,
+        "persistTrace": true
+      },
+      "setupRequirements": [],
+      "mcp": {
+        "enabled": false
+      },
+      "schedulePolicy": {
+        "enabled": false,
+        "allowAdHoc": true
+      },
+      "trace": {
+        "name": "review-relay-quote",
+        "namespace": "actions"
+      },
+      "invokesModel": false
+    },
+    {
+      "id": "relay-transfer-status",
+      "name": "relay-transfer-status",
+      "label": "Relay Transfer Status",
+      "description": "Read cross-chain lifecycle state from Relay's status endpoint.",
+      "visibility": "end_user",
+      "implementation": {
+        "type": "workflow",
+        "workflowId": "relay-transfer-status"
+      },
+      "inputSchema": "RelayStatusInput",
+      "outputSchema": null,
+      "approvalPolicy": {
+        "mode": "never",
+        "reason": "Read-only Relay API request."
+      },
+      "artifactPolicy": {
+        "outputArtifacts": [
+          "artifacts/relay-status.json"
+        ],
+        "persistRunSummary": true,
+        "persistTrace": true
+      },
+      "setupRequirements": [],
+      "mcp": {
+        "enabled": false
+      },
+      "schedulePolicy": {
+        "enabled": false,
+        "allowAdHoc": true
+      },
+      "trace": {
+        "name": "relay-transfer-status",
+        "namespace": "actions"
+      },
+      "invokesModel": false
+    },
+    {
+      "id": "broadcast-relay-step",
+      "name": "broadcast-relay-step",
+      "label": "Broadcast Relay Step",
+      "description": "Verify, simulate, and broadcast one externally signed exact-match Relay transaction step.",
+      "visibility": "end_user",
+      "implementation": {
+        "type": "workflow",
+        "workflowId": "broadcast-relay-step"
+      },
+      "inputSchema": "RelayBroadcastInput",
+      "outputSchema": null,
+      "approvalPolicy": {
+        "mode": "always",
+        "reason": "Broadcasts a signed onchain transaction."
+      },
+      "artifactPolicy": {
+        "outputArtifacts": [
+          "artifacts/relay-step-receipt.json"
+        ],
+        "persistRunSummary": true,
+        "persistTrace": true
+      },
+      "setupRequirements": [],
+      "mcp": {
+        "enabled": false
+      },
+      "schedulePolicy": {
+        "enabled": false,
+        "allowAdHoc": false
+      },
+      "trace": {
+        "name": "broadcast-relay-step",
+        "namespace": "actions"
+      },
+      "invokesModel": false
+    }
+  ],
+  "mcpExports": [],
+  "providerSupport": [
+    {
+      "id": "openpond_chat",
+      "setupStatus": "ready",
+      "setupRequirements": [],
+      "capabilities": [],
+      "enabledByDefault": false,
+      "responseRendering": {
+        "kind": "function",
+        "input": "AgentChatResult",
+        "output": "Record<string, unknown>",
+        "supportedFields": [
+          "text",
+          "files",
+          "artifactRefs",
+          "metadata"
+        ]
+      }
+    }
+  ],
+  "modelPolicy": {
+    "provider": "openpond-managed",
+    "required": false
+  },
+  "implementationRefs": {
+    "agents": [],
+    "remoteAgents": [],
+    "workflows": [
+      {
+        "id": "relay-chat",
+        "description": "Explain Relay actions without quoting, signing, or broadcasting."
+      },
+      {
+        "id": "quote-relay-transfer",
+        "description": "Request an unsigned exact-input EVM cross-chain quote from the official Relay SDK."
+      },
+      {
+        "id": "review-relay-quote",
+        "description": "Verify a Relay quote artifact and summarize its fees, steps, request IDs, and expiry."
+      },
+      {
+        "id": "relay-transfer-status",
+        "description": "Read a Relay request's cross-chain lifecycle status."
+      },
+      {
+        "id": "broadcast-relay-step",
+        "description": "Verify, simulate, and broadcast one externally signed incomplete EVM Relay step."
+      }
+    ],
+    "tools": [],
+    "connections": []
+  },
+  "sourceLayout": {
+    "root": ".",
+    "agentConfig": "agent/agent.ts",
+    "manifestMode": "typescript",
+    "extendsManifest": null,
+    "openpondYaml": null,
+    "actions": null,
+    "legacyActions": null,
+    "agents": null,
+    "remoteAgents": null,
+    "connections": null,
+    "editable": null,
+    "workflows": null,
+    "channels": null,
+    "tools": null,
+    "evals": null,
+    "volumes": null,
+    "integrations": null,
+    "schedules": null
+  },
+  "generatedArtifacts": {
+    "inspectJson": ".openpond/agent-inspect.json",
+    "agentManifestJson": ".openpond/agent-manifest.json",
+    "actionRegistryJson": ".openpond/action-registry.json",
+    "runtimeManifestPreviewYaml": ".openpond/openpond-manifest.preview.yaml",
+    "validatorReport": ".openpond/validator-report.md",
+    "evalResultsJson": ".openpond/eval-results.json",
+    "traces": ".openpond/traces"
+  },
+  "runtimeManifest": ".openpond/openpond-manifest.preview.yaml",
+  "editable": {
+    "schema": "openpond.agent.editable-policy.v1",
+    "kind": "editable",
+    "enabled": true,
+    "backend": "openpond-coding-work-item",
+    "runtimeEnvironmentId": "openpond-coding-core-v1",
+    "sourceOfTruth": "agent-source",
+    "policyDiscovery": {
+      "command": "openpond agent inspect --json",
+      "runAfter": "source-materialized"
+    },
+    "allowedPaths": [
+      "agent/**",
+      "src/**",
+      "package.json",
+      "tsconfig.json"
+    ],
+    "requiredChecks": [
+      "pnpm typecheck",
+      "pnpm agent:build",
+      "pnpm agent:validate",
+      "pnpm agent:eval"
+    ],
+    "defaultResultMode": "patch_only"
+  },
+  "capabilities": {
+    "actions": [
+      "chat",
+      "quote-relay-transfer",
+      "review-relay-quote",
+      "relay-transfer-status",
+      "broadcast-relay-step"
+    ],
+    "agents": [],
+    "remoteAgents": [],
+    "connections": [],
+    "channels": [
+      "openpond_chat"
+    ],
+    "tools": [],
+    "workflows": [
+      "relay-chat",
+      "quote-relay-transfer",
+      "review-relay-quote",
+      "relay-transfer-status",
+      "broadcast-relay-step"
+    ],
+    "schedules": [],
+    "evals": [
+      "relay-chat-has-no-write-side-effect"
+    ],
+    "volumes": [],
+    "env": [
+      "RELAY_API_KEY"
+    ],
+    "integrations": []
+  },
+  "setup": {
+    "channels": [
+      {
+        "id": "openpond_chat",
+        "targetAction": "chat",
+        "requiredConnections": [],
+        "capabilities": [],
+        "enabledByDefault": false,
+        "setupRequirements": [],
+        "setupStatus": "ready"
+      }
+    ],
+    "integrations": [],
+    "connections": [],
+    "envRefs": [
+      {
+        "schema": "openpond.agent.env-secret.v1",
+        "kind": "env",
+        "name": "RELAY_API_KEY",
+        "required": false,
+        "secret": true,
+        "description": "Optional server-side Relay API key stored in OpenPond secret storage."
+      }
+    ],
+    "volumes": [],
+    "schedules": []
+  },
+  "inputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+      "prompt": {
+        "type": "string"
+      },
+      "channel": {
+        "type": "string"
+      }
+    }
+  },
+  "inputSchemas": {
+    "RelayQuoteInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "network",
+        "fromChainId",
+        "toChainId",
+        "fromCurrency",
+        "toCurrency",
+        "amount",
+        "user",
+        "recipient",
+        "slippageBps"
+      ],
+      "properties": {
+        "network": {
+          "type": "string",
+          "enum": [
+            "mainnet",
+            "testnet"
+          ]
+        },
+        "fromChainId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "toChainId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fromCurrency": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{40}$"
+        },
+        "toCurrency": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{40}$"
+        },
+        "amount": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        },
+        "user": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{40}$"
+        },
+        "recipient": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{40}$"
+        },
+        "slippageBps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "quoteTtlSeconds": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 300
+        }
+      }
+    },
+    "RelayReviewInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact"
+      ],
+      "properties": {
+        "artifact": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": [
+            "schema",
+            "network",
+            "parameters",
+            "quotedAt",
+            "expiresAt",
+            "quote",
+            "quoteHash"
+          ],
+          "properties": {
+            "schema": {
+              "const": "ducky.relay.quote.v1"
+            },
+            "network": {
+              "type": "string",
+              "enum": [
+                "mainnet",
+                "testnet"
+              ]
+            },
+            "parameters": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "fromChainId",
+                "toChainId",
+                "fromCurrency",
+                "toCurrency",
+                "amount",
+                "user",
+                "recipient",
+                "slippageBps"
+              ],
+              "properties": {
+                "fromChainId": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "toChainId": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "fromCurrency": {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                "toCurrency": {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                "amount": {
+                  "type": "string",
+                  "pattern": "^[0-9]+$"
+                },
+                "user": {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                "recipient": {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                "slippageBps": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            },
+            "quotedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "quote": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "quoteHash": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            }
+          }
+        }
+      }
+    },
+    "RelayStatusInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "network",
+        "requestId"
+      ],
+      "properties": {
+        "network": {
+          "type": "string",
+          "enum": [
+            "mainnet",
+            "testnet"
+          ]
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      }
+    },
+    "RelayBroadcastInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rpcUrl",
+        "artifact",
+        "stepIndex",
+        "itemIndex",
+        "signedTransaction"
+      ],
+      "properties": {
+        "rpcUrl": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": [
+            "schema",
+            "network",
+            "parameters",
+            "quotedAt",
+            "expiresAt",
+            "quote",
+            "quoteHash"
+          ],
+          "properties": {
+            "schema": {
+              "const": "ducky.relay.quote.v1"
+            },
+            "network": {
+              "type": "string",
+              "enum": [
+                "mainnet",
+                "testnet"
+              ]
+            },
+            "parameters": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "fromChainId",
+                "toChainId",
+                "fromCurrency",
+                "toCurrency",
+                "amount",
+                "user",
+                "recipient",
+                "slippageBps"
+              ],
+              "properties": {
+                "fromChainId": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "toChainId": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "fromCurrency": {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                "toCurrency": {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                "amount": {
+                  "type": "string",
+                  "pattern": "^[0-9]+$"
+                },
+                "user": {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                "recipient": {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                "slippageBps": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            },
+            "quotedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "quote": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "quoteHash": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            }
+          }
+        },
+        "stepIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "signedTransaction": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]+$"
+        },
+        "confirmations": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        }
+      }
+    }
+  },
+  "validation": {
+    "declaredCommands": [
+      "node -e \"import('@relayprotocol/relay-sdk')\"",
+      "node -e \"import('viem')\""
+    ],
+    "requiredChecks": [
+      "pnpm typecheck",
+      "pnpm agent:build",
+      "pnpm agent:validate",
+      "pnpm agent:eval"
+    ]
+  }
+}

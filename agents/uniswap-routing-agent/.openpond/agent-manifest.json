@@ -1,0 +1,996 @@
+{
+  "schemaVersion": 1,
+  "schema": "openpond.agent.manifest.v1",
+  "artifactSchemas": {
+    "action": "openpond.agent.action.v1",
+    "actionRegistry": "openpond.agent.action-registry.v1",
+    "agent": "openpond.agent.local-agent.v1",
+    "artifactIndex": "openpond.agent.artifact-index.v1",
+    "agentManifest": "openpond.agent.manifest.v1",
+    "channel": "openpond.agent.channel.v1",
+    "editablePolicy": "openpond.agent.editable-policy.v1",
+    "envSecret": "openpond.agent.env-secret.v1",
+    "eval": "openpond.agent.eval.v1",
+    "evalResults": "openpond.agent.eval-results.v1",
+    "inspect": "openpond.agent.inspect.v1",
+    "instructions": "openpond.agent.instructions.v1",
+    "integration": "openpond.agent.integration.v1",
+    "intentRouter": "openpond.agent.intent-router.v1",
+    "mcpClientConnection": "openpond.agent.mcp-client-connection.v1",
+    "remoteAgent": "openpond.agent.remote-agent.v1",
+    "runtimeManifest": "openpond.runtime.manifest.v1",
+    "runtimeBridge": "openpond.agent.runtime-bridge.v1",
+    "schedule": "openpond.agent.schedule.v1",
+    "skill": "openpond.agent.skill.v1",
+    "tool": "openpond.agent.tool.v1",
+    "trace": "openpond.agent.trace.v1",
+    "validatorReport": "openpond.agent.validation.v1",
+    "volume": "openpond.agent.volume.v1",
+    "workflow": "openpond.agent.workflow.v1"
+  },
+  "sourceOfTruth": "typescript",
+  "project": {
+    "name": "uniswap-routing-agent",
+    "version": "0.1.0",
+    "useCase": "uniswap-routing-and-guarded-broadcast",
+    "description": "Build reviewable Uniswap routes and guard the broadcast of externally signed exact-match transactions."
+  },
+  "defaultEntrypoint": {
+    "scope": "action",
+    "name": "chat"
+  },
+  "runtime": {
+    "base": "node-bun-workspace"
+  },
+  "resources": {},
+  "modelPolicy": {
+    "provider": "openpond-managed",
+    "required": false
+  },
+  "instructions": {
+    "schema": "openpond.agent.instructions.v1",
+    "format": "markdown",
+    "source": "./agent/instructions.md",
+    "artifactRef": ".openpond/prompts/instructions.md",
+    "sourceHash": "b71adc8dc5725fc9eec1aaafe2be03a44b9a02519e10c16da4f3e4ec5575c8cc",
+    "charCount": 1695
+  },
+  "skills": [],
+  "editable": {
+    "schema": "openpond.agent.editable-policy.v1",
+    "kind": "editable",
+    "enabled": true,
+    "backend": "openpond-coding-work-item",
+    "runtimeEnvironmentId": "openpond-coding-core-v1",
+    "sourceOfTruth": "agent-source",
+    "policyDiscovery": {
+      "command": "openpond agent inspect --json",
+      "runAfter": "source-materialized"
+    },
+    "allowedPaths": [
+      "agent/**",
+      "src/**",
+      "package.json",
+      "tsconfig.json"
+    ],
+    "requiredChecks": [
+      "pnpm typecheck",
+      "pnpm agent:build",
+      "pnpm agent:validate",
+      "pnpm agent:eval"
+    ],
+    "defaultResultMode": "patch_only"
+  },
+  "setup": {
+    "commands": [
+      "pnpm install --frozen-lockfile"
+    ]
+  },
+  "validation": {
+    "commands": [
+      "node -e \"require('@uniswap/smart-order-router')\"",
+      "node -e \"require('@uniswap/sdk-core')\"",
+      "node -e \"import('viem')\""
+    ]
+  },
+  "inputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+      "prompt": {
+        "type": "string"
+      },
+      "channel": {
+        "type": "string"
+      }
+    }
+  },
+  "inputSchemas": {
+    "UniswapQuoteInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rpcUrl",
+        "chainId",
+        "sender",
+        "recipient",
+        "tokenIn",
+        "tokenOut",
+        "amountInRaw",
+        "slippageBps"
+      ],
+      "properties": {
+        "rpcUrl": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chainId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sender": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{40}$"
+        },
+        "recipient": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{40}$"
+        },
+        "tokenIn": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "address",
+            "decimals"
+          ],
+          "properties": {
+            "chainId": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "address": {
+              "type": "string",
+              "pattern": "^0x[0-9a-fA-F]{40}$"
+            },
+            "decimals": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 255
+            },
+            "symbol": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            }
+          }
+        },
+        "tokenOut": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "address",
+            "decimals"
+          ],
+          "properties": {
+            "chainId": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "address": {
+              "type": "string",
+              "pattern": "^0x[0-9a-fA-F]{40}$"
+            },
+            "decimals": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 255
+            },
+            "symbol": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            }
+          }
+        },
+        "amountInRaw": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        },
+        "slippageBps": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5000
+        },
+        "deadlineSeconds": {
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 86400
+        }
+      }
+    },
+    "UniswapReviewInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "plan"
+      ],
+      "properties": {
+        "plan": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": [
+            "schema",
+            "chainId",
+            "sender",
+            "recipient",
+            "tokenIn",
+            "tokenOut",
+            "amountInRaw",
+            "quoteOutRaw",
+            "minimumAmountOutRaw",
+            "slippageBps",
+            "deadline",
+            "transaction",
+            "planHash"
+          ],
+          "properties": {
+            "schema": {
+              "const": "ducky.uniswap.swap-plan.v1"
+            },
+            "chainId": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "sender": {
+              "type": "string",
+              "pattern": "^0x[0-9a-fA-F]{40}$"
+            },
+            "recipient": {
+              "type": "string",
+              "pattern": "^0x[0-9a-fA-F]{40}$"
+            },
+            "tokenIn": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "address",
+                "decimals"
+              ],
+              "properties": {
+                "chainId": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "address": {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                "decimals": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 255
+                },
+                "symbol": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 32
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                }
+              }
+            },
+            "tokenOut": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "address",
+                "decimals"
+              ],
+              "properties": {
+                "chainId": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "address": {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                "decimals": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 255
+                },
+                "symbol": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 32
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                }
+              }
+            },
+            "amountInRaw": {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            },
+            "quoteOutRaw": {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            },
+            "minimumAmountOutRaw": {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            },
+            "slippageBps": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5000
+            },
+            "deadline": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "transaction": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "chainId",
+                "from",
+                "to",
+                "data",
+                "valueWei"
+              ],
+              "properties": {
+                "chainId": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "from": {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                "to": {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                "data": {
+                  "type": "string",
+                  "pattern": "^0x([0-9a-fA-F]{2})*$"
+                },
+                "valueWei": {
+                  "type": "string",
+                  "pattern": "^[0-9]+$"
+                }
+              }
+            },
+            "planHash": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            }
+          }
+        }
+      }
+    },
+    "UniswapBroadcastInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rpcUrl",
+        "plan",
+        "signedTransaction"
+      ],
+      "properties": {
+        "rpcUrl": {
+          "type": "string",
+          "minLength": 1
+        },
+        "plan": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": [
+            "schema",
+            "chainId",
+            "sender",
+            "recipient",
+            "tokenIn",
+            "tokenOut",
+            "amountInRaw",
+            "quoteOutRaw",
+            "minimumAmountOutRaw",
+            "slippageBps",
+            "deadline",
+            "transaction",
+            "planHash"
+          ],
+          "properties": {
+            "schema": {
+              "const": "ducky.uniswap.swap-plan.v1"
+            },
+            "chainId": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "sender": {
+              "type": "string",
+              "pattern": "^0x[0-9a-fA-F]{40}$"
+            },
+            "recipient": {
+              "type": "string",
+              "pattern": "^0x[0-9a-fA-F]{40}$"
+            },
+            "tokenIn": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "address",
+                "decimals"
+              ],
+              "properties": {
+                "chainId": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "address": {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                "decimals": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 255
+                },
+                "symbol": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 32
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                }
+              }
+            },
+            "tokenOut": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "address",
+                "decimals"
+              ],
+              "properties": {
+                "chainId": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "address": {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                "decimals": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 255
+                },
+                "symbol": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 32
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                }
+              }
+            },
+            "amountInRaw": {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            },
+            "quoteOutRaw": {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            },
+            "minimumAmountOutRaw": {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            },
+            "slippageBps": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5000
+            },
+            "deadline": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "transaction": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "chainId",
+                "from",
+                "to",
+                "data",
+                "valueWei"
+              ],
+              "properties": {
+                "chainId": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "from": {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                "to": {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                "data": {
+                  "type": "string",
+                  "pattern": "^0x([0-9a-fA-F]{2})*$"
+                },
+                "valueWei": {
+                  "type": "string",
+                  "pattern": "^[0-9]+$"
+                }
+              }
+            },
+            "planHash": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            }
+          }
+        },
+        "signedTransaction": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]+$"
+        },
+        "confirmations": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        }
+      }
+    }
+  },
+  "actionCatalog": [
+    {
+      "id": "chat",
+      "name": "chat",
+      "label": "Chat",
+      "description": "Explain the Uniswap Routing Agent's explicit actions.",
+      "visibility": "default",
+      "implementation": {
+        "type": "intent-router",
+        "routerId": "chat-router"
+      },
+      "inputSchema": null,
+      "outputSchema": null,
+      "approvalPolicy": {
+        "mode": "never",
+        "reason": "Read-only action discovery."
+      },
+      "artifactPolicy": {
+        "outputArtifacts": [],
+        "persistRunSummary": true,
+        "persistTrace": true
+      },
+      "setupRequirements": [],
+      "mcp": {
+        "enabled": false
+      },
+      "schedulePolicy": {
+        "enabled": false,
+        "allowAdHoc": true
+      },
+      "trace": {
+        "name": "chat",
+        "namespace": "actions"
+      },
+      "invokesModel": true
+    },
+    {
+      "id": "quote-uniswap-swap",
+      "name": "quote-uniswap-swap",
+      "label": "Quote Uniswap Swap",
+      "description": "Quote an exact-input route and return unsigned SwapRouter02 calldata.",
+      "visibility": "end_user",
+      "implementation": {
+        "type": "workflow",
+        "workflowId": "quote-uniswap-swap"
+      },
+      "inputSchema": "UniswapQuoteInput",
+      "outputSchema": null,
+      "approvalPolicy": {
+        "mode": "never",
+        "reason": "Read-only quote and unsigned construction."
+      },
+      "artifactPolicy": {
+        "outputArtifacts": [
+          "artifacts/uniswap-swap-plan.json"
+        ],
+        "persistRunSummary": true,
+        "persistTrace": true
+      },
+      "setupRequirements": [],
+      "mcp": {
+        "enabled": false
+      },
+      "schedulePolicy": {
+        "enabled": false,
+        "allowAdHoc": true
+      },
+      "trace": {
+        "name": "quote-uniswap-swap",
+        "namespace": "actions"
+      },
+      "invokesModel": false
+    },
+    {
+      "id": "review-uniswap-plan",
+      "name": "review-uniswap-plan",
+      "label": "Review Uniswap Plan",
+      "description": "Verify a plan's hash, exact fields, and expiry without network access.",
+      "visibility": "end_user",
+      "implementation": {
+        "type": "workflow",
+        "workflowId": "review-uniswap-plan"
+      },
+      "inputSchema": "UniswapReviewInput",
+      "outputSchema": null,
+      "approvalPolicy": {
+        "mode": "never",
+        "reason": "Pure validation of a supplied artifact."
+      },
+      "artifactPolicy": {
+        "outputArtifacts": [
+          "artifacts/uniswap-plan-review.json"
+        ],
+        "persistRunSummary": true,
+        "persistTrace": true
+      },
+      "setupRequirements": [],
+      "mcp": {
+        "enabled": false
+      },
+      "schedulePolicy": {
+        "enabled": false,
+        "allowAdHoc": true
+      },
+      "trace": {
+        "name": "review-uniswap-plan",
+        "namespace": "actions"
+      },
+      "invokesModel": false
+    },
+    {
+      "id": "broadcast-uniswap-swap",
+      "name": "broadcast-uniswap-swap",
+      "label": "Broadcast Uniswap Swap",
+      "description": "Verify, simulate, and broadcast an externally signed exact-match swap transaction.",
+      "visibility": "end_user",
+      "implementation": {
+        "type": "workflow",
+        "workflowId": "broadcast-uniswap-swap"
+      },
+      "inputSchema": "UniswapBroadcastInput",
+      "outputSchema": null,
+      "approvalPolicy": {
+        "mode": "always",
+        "reason": "Broadcasts a signed onchain transaction."
+      },
+      "artifactPolicy": {
+        "outputArtifacts": [
+          "artifacts/uniswap-broadcast-receipt.json"
+        ],
+        "persistRunSummary": true,
+        "persistTrace": true
+      },
+      "setupRequirements": [],
+      "mcp": {
+        "enabled": false
+      },
+      "schedulePolicy": {
+        "enabled": false,
+        "allowAdHoc": false
+      },
+      "trace": {
+        "name": "broadcast-uniswap-swap",
+        "namespace": "actions"
+      },
+      "invokesModel": false
+    }
+  ],
+  "actions": [
+    {
+      "schema": "openpond.agent.action.v1",
+      "id": "chat",
+      "name": "chat",
+      "label": "Chat",
+      "description": "Explain the Uniswap Routing Agent's explicit actions.",
+      "visibility": "default",
+      "target": {
+        "kind": "intent-router",
+        "router": "chat-router",
+        "intents": [
+          "uniswap_help"
+        ],
+        "defaultIntent": "uniswap_help"
+      },
+      "implementation": {
+        "type": "intent-router",
+        "routerId": "chat-router"
+      },
+      "timeoutSeconds": 60,
+      "inputSchema": null,
+      "outputSchema": null,
+      "approvalPolicy": {
+        "mode": "never",
+        "reason": "Read-only action discovery."
+      },
+      "artifactPolicy": {
+        "outputArtifacts": [],
+        "persistRunSummary": true,
+        "persistTrace": true
+      },
+      "setupRequirements": [],
+      "mcp": {
+        "enabled": false
+      },
+      "schedulePolicy": {
+        "enabled": false,
+        "allowAdHoc": true
+      },
+      "trace": {
+        "name": "chat",
+        "namespace": "actions"
+      },
+      "invokesModel": true,
+      "outputArtifacts": []
+    },
+    {
+      "schema": "openpond.agent.action.v1",
+      "id": "quote-uniswap-swap",
+      "name": "quote-uniswap-swap",
+      "label": "Quote Uniswap Swap",
+      "description": "Quote an exact-input route and return unsigned SwapRouter02 calldata.",
+      "visibility": "end_user",
+      "target": {
+        "kind": "workflow",
+        "workflow": "quote-uniswap-swap"
+      },
+      "implementation": {
+        "type": "workflow",
+        "workflowId": "quote-uniswap-swap"
+      },
+      "timeoutSeconds": 300,
+      "inputSchema": "UniswapQuoteInput",
+      "outputSchema": null,
+      "approvalPolicy": {
+        "mode": "never",
+        "reason": "Read-only quote and unsigned construction."
+      },
+      "artifactPolicy": {
+        "outputArtifacts": [
+          "artifacts/uniswap-swap-plan.json"
+        ],
+        "persistRunSummary": true,
+        "persistTrace": true
+      },
+      "setupRequirements": [],
+      "mcp": {
+        "enabled": false
+      },
+      "schedulePolicy": {
+        "enabled": false,
+        "allowAdHoc": true
+      },
+      "trace": {
+        "name": "quote-uniswap-swap",
+        "namespace": "actions"
+      },
+      "invokesModel": false,
+      "outputArtifacts": [
+        "artifacts/uniswap-swap-plan.json"
+      ]
+    },
+    {
+      "schema": "openpond.agent.action.v1",
+      "id": "review-uniswap-plan",
+      "name": "review-uniswap-plan",
+      "label": "Review Uniswap Plan",
+      "description": "Verify a plan's hash, exact fields, and expiry without network access.",
+      "visibility": "end_user",
+      "target": {
+        "kind": "workflow",
+        "workflow": "review-uniswap-plan"
+      },
+      "implementation": {
+        "type": "workflow",
+        "workflowId": "review-uniswap-plan"
+      },
+      "timeoutSeconds": 60,
+      "inputSchema": "UniswapReviewInput",
+      "outputSchema": null,
+      "approvalPolicy": {
+        "mode": "never",
+        "reason": "Pure validation of a supplied artifact."
+      },
+      "artifactPolicy": {
+        "outputArtifacts": [
+          "artifacts/uniswap-plan-review.json"
+        ],
+        "persistRunSummary": true,
+        "persistTrace": true
+      },
+      "setupRequirements": [],
+      "mcp": {
+        "enabled": false
+      },
+      "schedulePolicy": {
+        "enabled": false,
+        "allowAdHoc": true
+      },
+      "trace": {
+        "name": "review-uniswap-plan",
+        "namespace": "actions"
+      },
+      "invokesModel": false,
+      "outputArtifacts": [
+        "artifacts/uniswap-plan-review.json"
+      ]
+    },
+    {
+      "schema": "openpond.agent.action.v1",
+      "id": "broadcast-uniswap-swap",
+      "name": "broadcast-uniswap-swap",
+      "label": "Broadcast Uniswap Swap",
+      "description": "Verify, simulate, and broadcast an externally signed exact-match swap transaction.",
+      "visibility": "end_user",
+      "target": {
+        "kind": "workflow",
+        "workflow": "broadcast-uniswap-swap"
+      },
+      "implementation": {
+        "type": "workflow",
+        "workflowId": "broadcast-uniswap-swap"
+      },
+      "timeoutSeconds": 600,
+      "inputSchema": "UniswapBroadcastInput",
+      "outputSchema": null,
+      "approvalPolicy": {
+        "mode": "always",
+        "reason": "Broadcasts a signed onchain transaction."
+      },
+      "artifactPolicy": {
+        "outputArtifacts": [
+          "artifacts/uniswap-broadcast-receipt.json"
+        ],
+        "persistRunSummary": true,
+        "persistTrace": true
+      },
+      "setupRequirements": [],
+      "mcp": {
+        "enabled": false
+      },
+      "schedulePolicy": {
+        "enabled": false,
+        "allowAdHoc": false
+      },
+      "trace": {
+        "name": "broadcast-uniswap-swap",
+        "namespace": "actions"
+      },
+      "invokesModel": false,
+      "outputArtifacts": [
+        "artifacts/uniswap-broadcast-receipt.json"
+      ]
+    }
+  ],
+  "chat": {
+    "schema": "openpond.agent.intent-router.v1",
+    "kind": "intent-router",
+    "inputSchema": "AgentChatInput",
+    "intents": [
+      "uniswap_help"
+    ],
+    "defaultIntent": "uniswap_help",
+    "routing": {
+      "strategy": "code",
+      "traceSelection": true
+    }
+  },
+  "agents": [],
+  "remoteAgents": [],
+  "connections": [],
+  "workflows": [
+    {
+      "schema": "openpond.agent.workflow.v1",
+      "name": "uniswap-chat",
+      "description": "Explain the Uniswap agent's explicit actions without performing network or write operations."
+    },
+    {
+      "schema": "openpond.agent.workflow.v1",
+      "name": "quote-uniswap-swap",
+      "description": "Quote an exact-input Uniswap route and build an unsigned SwapRouter02 transaction plan."
+    },
+    {
+      "schema": "openpond.agent.workflow.v1",
+      "name": "review-uniswap-plan",
+      "description": "Verify a Uniswap plan's schema, exact transaction fields, deadline, and content hash."
+    },
+    {
+      "schema": "openpond.agent.workflow.v1",
+      "name": "broadcast-uniswap-swap",
+      "description": "Verify, simulate, broadcast, and monitor an externally signed Uniswap transaction."
+    }
+  ],
+  "channels": [
+    {
+      "schema": "openpond.agent.channel.v1",
+      "id": "openpond_chat",
+      "target": {
+        "action": "chat"
+      },
+      "targetAction": "chat",
+      "requiredConnections": [],
+      "capabilities": [],
+      "enabledByDefault": false,
+      "adapter": {
+        "normalizeEvent": {
+          "kind": "function",
+          "output": "AgentChatInput",
+          "requiredFields": [
+            "prompt",
+            "channel"
+          ]
+        },
+        "renderResponse": {
+          "kind": "function",
+          "input": "AgentChatResult",
+          "output": "Record<string, unknown>",
+          "supportedFields": [
+            "text",
+            "files",
+            "artifactRefs",
+            "metadata"
+          ]
+        }
+      },
+      "setupRequirements": [],
+      "setupStatus": "ready"
+    }
+  ],
+  "tools": [],
+  "volumes": [],
+  "envRefs": [],
+  "integrations": [],
+  "schedules": [],
+  "evals": [
+    {
+      "schema": "openpond.agent.eval.v1",
+      "name": "uniswap-chat-has-no-write-side-effect",
+      "description": "The default action directs users to explicit actions and does not broadcast.",
+      "expectedArtifacts": []
+    }
+  ]
+}
