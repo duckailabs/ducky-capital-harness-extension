@@ -1,0 +1,13 @@
+packages:
+  - agents/*
+
+allowBuilds:
+  dtrace-provider: false
+  esbuild: true
+  keccak: true
+
+minimumReleaseAgeExclude:
+  - viem@2.55.8
+
+onlyBuiltDependencies:
+  - esbuild

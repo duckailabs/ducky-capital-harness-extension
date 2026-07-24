@@ -1,0 +1,25 @@
+{
+  "name": "@ducky-capital/uniswap-routing-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@ethersproject/providers": "5.8.0",
+    "@uniswap/router-sdk": "2.11.0",
+    "@uniswap/sdk-core": "7.18.0",
+    "@uniswap/smart-order-router": "4.31.10",
+    "openpond-agent-sdk": "file:../../../openpond/packages/agent-sdk",
+    "viem": "2.55.8"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "agent:inspect": "openpond-agent inspect --json",
+    "agent:build": "openpond-agent build",
+    "agent:validate": "openpond-agent validate --json",
+    "agent:eval": "openpond-agent eval --json",
+    "typecheck": "tsc --noEmit"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "ducky-capital-openpond-profile",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.13.0",
+  "scripts": {
+    "agents:inspect": "pnpm --recursive --if-present agent:inspect",
+    "agents:build": "pnpm --recursive --if-present agent:build",
+    "agents:validate": "pnpm --recursive --if-present agent:validate",
+    "agents:eval": "pnpm --recursive --if-present agent:eval",
+    "agents:typecheck": "pnpm --recursive --if-present typecheck",
+    "agents:check": "pnpm agents:typecheck && pnpm agents:build && pnpm agents:validate && pnpm agents:eval"
+  }
+}

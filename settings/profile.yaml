@@ -1,0 +1,18 @@
+schema: openpond.profile.v1
+profile: ducky-capital
+agents:
+  - id: safe-treasury-operator
+    path: agents/safe-treasury-operator
+    name: Safe Treasury Operator
+    displayName: Safe Treasury Operator
+    enabled: true
+  - id: uniswap-routing-agent
+    path: agents/uniswap-routing-agent
+    name: Uniswap Routing Agent
+    displayName: Uniswap Routing Agent
+    enabled: true
+  - id: relay-cross-chain-operator
+    path: agents/relay-cross-chain-operator
+    name: Relay Cross-Chain Operator
+    displayName: Relay Cross-Chain Operator
+    enabled: true

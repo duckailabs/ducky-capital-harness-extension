@@ -1,0 +1,20 @@
+{
+  "schema": "openpond.profileRepo.v1",
+  "defaultProfile": "ducky-capital",
+  "profiles": {
+    "ducky-capital": {
+      "path": ".",
+      "defaultAgent": "safe-treasury-operator",
+      "enabledAgents": [
+        "safe-treasury-operator",
+        "uniswap-routing-agent",
+        "relay-cross-chain-operator"
+      ],
+      "agentNames": {
+        "safe-treasury-operator": "Safe Treasury Operator",
+        "uniswap-routing-agent": "Uniswap Routing Agent",
+        "relay-cross-chain-operator": "Relay Cross-Chain Operator"
+      }
+    }
+  }
+}
