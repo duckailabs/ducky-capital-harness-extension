@@ -7,6 +7,7 @@ EVM investigation, transaction construction, multichain coordination, simulation
 - `safe-treasury-operator` — inspect a Safe, construct canonical multisig transaction hashes, read confirmation status, and publish an externally signed proposal. Proposal publication is approval-gated and does not execute the Safe transaction.
 - `uniswap-routing-agent` — obtain exact-input routes with Uniswap's smart-order-router, return hashed unsigned SwapRouter02 plans, review them, and approval-gate the broadcast of an externally signed exact match.
 - `relay-cross-chain-operator` — obtain EVM cross-chain quotes with the Relay SDK, inspect every transaction and signature step, approval-gate one exact signed transaction step at a time, and monitor destination status.
+- `hyperliquid-trade-reviewer` — read a fresh owner-bound window of direct Hyperliquid fills through a short-lived capability lease and produce read-only JSON and Markdown execution reviews.
 
 The agents are implemented in TypeScript with the OpenPond Agent SDK. They never accept raw private keys or seed phrases. Uniswap and Relay signing happens outside the agents; Safe proposal publication requires a signature created by an existing Safe owner.
 
@@ -69,7 +70,7 @@ duckailabs/ducky-capital-skills
 
 This adds the `ducky-capital` Profile without activating or executing it. Select it in a task when you want its skills available.
 
-The profile also registers the three TypeScript agents above. Their third-party SDK dependencies are pinned in the repository lockfile. For local development, install and verify them from the repository root:
+The profile also registers the four TypeScript agents above. Their third-party SDK dependencies are pinned in the repository lockfile. For local development, install and verify them from the repository root:
 
 ```bash
 pnpm install --frozen-lockfile
@@ -77,6 +78,8 @@ pnpm agents:check
 ```
 
 `SAFE_API_KEY` is optional when using a custom Safe Transaction Service URL and otherwise is stored as an OpenPond secret. `RELAY_API_KEY` is optional and is only sent to Relay's official mainnet or testnet API. RPC URLs are provided per action so the chain ID can be checked before construction or broadcast.
+
+The Hyperliquid Trade Reviewer does not accept Ducky user, Team, wallet, endpoint, or credential input. Ducky supplies a one-run `ducky.hyperliquid.read_recent_fills` capability to OpenPond server-to-server; the Agent receives only a short-lived integration proxy lease and cannot place or modify trades.
 
 To install the same repository as a third-party skill extension instead:
 

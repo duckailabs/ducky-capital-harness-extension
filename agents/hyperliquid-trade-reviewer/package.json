@@ -1,0 +1,21 @@
+{
+  "name": "@ducky-capital/hyperliquid-trade-reviewer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "openpond-agent-sdk": "file:../../../openpond/packages/agent-sdk"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "agent:inspect": "openpond-agent inspect --json",
+    "agent:build": "openpond-agent build",
+    "agent:validate": "openpond-agent validate --json",
+    "agent:eval": "openpond-agent eval --json",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  }
+}

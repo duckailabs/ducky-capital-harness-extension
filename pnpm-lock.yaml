@@ -8,6 +8,19 @@ importers:
 
   .: {}
 
+  agents/hyperliquid-trade-reviewer:
+    dependencies:
+      openpond-agent-sdk:
+        specifier: file:../../../openpond/packages/agent-sdk
+        version: file:../openpond/packages/agent-sdk
+    devDependencies:
+      '@types/node':
+        specifier: 24.13.3
+        version: 24.13.3
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+
   agents/relay-cross-chain-operator:
     dependencies:
       '@relayprotocol/relay-sdk':
@@ -915,6 +928,7 @@ packages:
 
   crypto-js@4.2.0:
     resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+    deprecated: Active development of CryptoJS has been discontinued. This library is no longer maintained.
 
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}

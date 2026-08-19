@@ -1,0 +1,42 @@
+{
+  "asOf": "2026-08-19T12:00:00.000Z",
+  "windowStart": "2026-08-18T12:00:00.000Z",
+  "windowEnd": "2026-08-19T12:00:00.000Z",
+  "coverage": "hyperliquid_direct",
+  "environment": "mainnet",
+  "walletCount": 1,
+  "tradeCount": 2,
+  "trades": [
+    {
+      "symbol": "BTC",
+      "side": "buy",
+      "size": 0.01,
+      "price": 100000,
+      "notional": 1000,
+      "fee": 0.5,
+      "feeToken": "USDC",
+      "closedPnl": null,
+      "liquidity": "taker",
+      "filledAt": "2026-08-19T10:00:02.000Z"
+    },
+    {
+      "symbol": "BTC",
+      "side": "sell",
+      "size": 0.005,
+      "price": 100200,
+      "notional": 501,
+      "fee": 0.25,
+      "feeToken": "USDC",
+      "closedPnl": 0.75,
+      "liquidity": "taker",
+      "filledAt": "2026-08-19T10:20:02.000Z"
+    }
+  ],
+  "truncated": false,
+  "empty": false,
+  "dataQuality": {
+    "lastTradeAt": "2026-08-19T10:20:02.000Z",
+    "lastCheckedAt": "2026-08-19T12:00:00.000Z",
+    "warnings": []
+  }
+}
