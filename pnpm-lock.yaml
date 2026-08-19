@@ -11,8 +11,8 @@ importers:
   agents/hyperliquid-trade-reviewer:
     dependencies:
       openpond-agent-sdk:
-        specifier: file:../../../openpond/packages/agent-sdk
-        version: file:../openpond/packages/agent-sdk
+        specifier: ^0.1.1
+        version: 0.1.1
     devDependencies:
       '@types/node':
         specifier: 24.13.3
@@ -27,8 +27,8 @@ importers:
         specifier: 7.0.0
         version: 7.0.0(viem@2.55.8(typescript@5.9.3)(zod@4.4.3))
       openpond-agent-sdk:
-        specifier: file:../../../openpond/packages/agent-sdk
-        version: file:../openpond/packages/agent-sdk
+        specifier: ^0.1.1
+        version: 0.1.1
       viem:
         specifier: 2.55.8
         version: 2.55.8(typescript@5.9.3)(zod@4.4.3)
@@ -52,8 +52,8 @@ importers:
         specifier: 4.0.1
         version: 4.0.1(typescript@5.9.3)(zod@4.4.3)
       openpond-agent-sdk:
-        specifier: file:../../../openpond/packages/agent-sdk
-        version: file:../openpond/packages/agent-sdk
+        specifier: ^0.1.1
+        version: 0.1.1
       viem:
         specifier: 2.55.8
         version: 2.55.8(typescript@5.9.3)(zod@4.4.3)
@@ -80,8 +80,8 @@ importers:
         specifier: 4.31.10
         version: 4.31.10(hardhat@2.29.0(typescript@5.9.3))(jsbi@3.2.5)
       openpond-agent-sdk:
-        specifier: file:../../../openpond/packages/agent-sdk
-        version: file:../openpond/packages/agent-sdk
+        specifier: ^0.1.1
+        version: 0.1.1
       viem:
         specifier: 2.55.8
         version: 2.55.8(typescript@5.9.3)(zod@4.4.3)
@@ -1422,8 +1422,9 @@ packages:
   once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
 
-  openpond-agent-sdk@file:../openpond/packages/agent-sdk:
-    resolution: {directory: ../openpond/packages/agent-sdk, type: directory}
+  openpond-agent-sdk@0.1.1:
+    resolution: {integrity: sha512-g8CFZlF8myVOp7vxh3Sy1ltImAMO/r82K5OpEYVhXWNYYB5wroSogwMHtbeq8p3W9iqETbo84zPo84s80epb7A==}
+    engines: {node: '>=22.14.0 <25'}
     hasBin: true
 
   os-tmpdir@1.0.2:
@@ -3599,7 +3600,7 @@ snapshots:
       wrappy: 1.0.2
     optional: true
 
-  openpond-agent-sdk@file:../openpond/packages/agent-sdk:
+  openpond-agent-sdk@0.1.1:
     dependencies:
       tsx: 4.23.1
       yaml: 2.9.0
