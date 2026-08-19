@@ -8,7 +8,8 @@
     "agents:build": "pnpm --recursive --if-present agent:build",
     "agents:validate": "pnpm --recursive --if-present agent:validate",
     "agents:eval": "pnpm --recursive --if-present agent:eval",
+    "agents:test": "pnpm --recursive --if-present test",
     "agents:typecheck": "pnpm --recursive --if-present typecheck",
-    "agents:check": "pnpm agents:typecheck && pnpm agents:build && pnpm agents:validate && pnpm agents:eval"
+    "agents:check": "pnpm agents:typecheck && pnpm agents:test && pnpm agents:build && pnpm agents:validate && pnpm agents:eval"
   }
 }

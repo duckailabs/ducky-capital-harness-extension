@@ -1,12 +1,10 @@
 {
-  "name": "@ducky-capital/relay-cross-chain-operator",
+  "name": "@ducky-capital/hyperliquid-trade-reviewer",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "dependencies": {
-    "@relayprotocol/relay-sdk": "7.0.0",
-    "openpond-agent-sdk": "^0.1.1",
-    "viem": "2.55.8"
+    "openpond-agent-sdk": "^0.1.1"
   },
   "devDependencies": {
     "@types/node": "24.13.3",
@@ -17,6 +15,7 @@
     "agent:build": "openpond-agent build",
     "agent:validate": "openpond-agent validate --json",
     "agent:eval": "openpond-agent eval --json",
+    "test": "bun test",
     "typecheck": "tsc --noEmit"
   }
 }

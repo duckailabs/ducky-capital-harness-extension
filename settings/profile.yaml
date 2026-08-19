@@ -16,3 +16,8 @@ agents:
     name: Relay Cross-Chain Operator
     displayName: Relay Cross-Chain Operator
     enabled: true
+  - id: hyperliquid-trade-reviewer
+    path: agents/hyperliquid-trade-reviewer
+    name: Hyperliquid Trade Reviewer
+    displayName: Hyperliquid Trade Reviewer
+    enabled: true

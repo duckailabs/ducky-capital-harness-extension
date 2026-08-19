@@ -1,0 +1,17 @@
+{
+  "asOf": "2026-08-19T12:00:00.000Z",
+  "windowStart": "2026-08-18T12:00:00.000Z",
+  "windowEnd": "2026-08-19T12:00:00.000Z",
+  "coverage": "hyperliquid_direct",
+  "environment": "mainnet",
+  "walletCount": 1,
+  "tradeCount": 0,
+  "trades": [],
+  "truncated": false,
+  "empty": true,
+  "dataQuality": {
+    "lastTradeAt": null,
+    "lastCheckedAt": "2026-08-19T12:00:00.000Z",
+    "warnings": []
+  }
+}

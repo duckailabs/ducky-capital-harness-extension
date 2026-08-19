@@ -8,12 +8,14 @@
       "enabledAgents": [
         "safe-treasury-operator",
         "uniswap-routing-agent",
-        "relay-cross-chain-operator"
+        "relay-cross-chain-operator",
+        "hyperliquid-trade-reviewer"
       ],
       "agentNames": {
         "safe-treasury-operator": "Safe Treasury Operator",
         "uniswap-routing-agent": "Uniswap Routing Agent",
-        "relay-cross-chain-operator": "Relay Cross-Chain Operator"
+        "relay-cross-chain-operator": "Relay Cross-Chain Operator",
+        "hyperliquid-trade-reviewer": "Hyperliquid Trade Reviewer"
       }
     }
   }
