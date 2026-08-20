@@ -17,9 +17,26 @@ const recentTradesInput = {
   },
 } as const;
 
+const generateTradeIdeaInput = {
+  type: "object",
+  additionalProperties: false,
+  required: ["symbol"],
+  properties: {
+    symbol: { type: "string", minLength: 1, maxLength: 40 },
+    marketSymbol: { type: "string", minLength: 1, maxLength: 80 },
+    currentMarkPrice: { type: "number", exclusiveMinimum: 0 },
+    availableToTrade: { type: "number", minimum: 0 },
+    accountValue: { type: "number", minimum: 0 },
+    leverage: { type: "number", exclusiveMinimum: 0, maximum: 100 },
+    leverageMode: { type: "string", enum: ["cross", "isolated"] },
+    environment,
+  },
+} as const;
+
 export const tradeReviewerInputSchemas = {
   GetRecentHyperliquidTradesInput: recentTradesInput,
   ReviewRecentHyperliquidTradesInput: recentTradesInput,
+  GenerateTradeIdeaInput: generateTradeIdeaInput,
 } as const;
 
 export const tradeReviewerProjectInputSchema = {
