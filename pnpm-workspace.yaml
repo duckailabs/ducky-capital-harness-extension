@@ -8,7 +8,7 @@ allowBuilds:
 
 minimumReleaseAgeExclude:
   - viem@2.55.8
-  - openpond-agent-sdk@0.1.1
+  - openpond-agent-sdk@0.1.1 || 0.1.2
 
 onlyBuiltDependencies:
   - esbuild

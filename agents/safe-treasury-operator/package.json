@@ -7,7 +7,7 @@
     "@safe-global/api-kit": "5.0.1",
     "@safe-global/protocol-kit": "8.0.4",
     "@safe-global/types-kit": "4.0.1",
-    "openpond-agent-sdk": "^0.1.1",
+    "openpond-agent-sdk": "^0.1.2",
     "viem": "2.55.8"
   },
   "devDependencies": {
