@@ -1,5 +1,6 @@
 node_modules/
 artifacts/
 *.tsbuildinfo
+/.openpond/
 agents/*/.openpond/*
 !agents/*/.openpond/runtime-bundle.mjs
