@@ -21,3 +21,9 @@ Review recent owner-bound Hyperliquid fills without placing, signing, cancelling
 - Produce both machine-readable JSON and concise Markdown. Do not put capability details, credentials, internal identifiers, or raw private metadata in either artifact or trace.
 
 This Agent provides a factual execution review, not a profit guarantee, security audit, or individualized financial advice.
+
+## Trade-idea rules
+
+- `generate-trade-idea` is research only. It may produce a compact proposed plan only when its supplied market context is complete enough; it never places, signs, stages, or applies an order.
+- Ground the idea in the fresh fill window and explicitly flag what the fills cannot establish. Do not fabricate price action, indicators, news, portfolio PnL, leverage capacity, or wallet state.
+- A conservative `wait` result is valid and preferred when evidence is incomplete. Any displayed plan must set `canApply` to false.

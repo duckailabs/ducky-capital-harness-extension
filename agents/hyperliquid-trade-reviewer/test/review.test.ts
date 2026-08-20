@@ -9,6 +9,10 @@ import {
   buildTradeReviewReport,
   renderTradeReviewMarkdown,
 } from "../src/review.js";
+import {
+  buildTradeIdea,
+  normalizeTradeIdeaInput,
+} from "../src/idea.js";
 
 const emptyFixture = {
   asOf: "2026-08-19T12:00:00.000Z",
@@ -96,5 +100,15 @@ describe("Hyperliquid Trade Reviewer", () => {
     expect(report.summary.tradeCount).toBe(0);
     expect(markdown).toContain("No Hyperliquid fills");
     expect(markdown).not.toContain("change your position");
+  });
+
+  test("keeps generated trade ideas read-only and non-executable", () => {
+    const idea = buildTradeIdea(
+      normalizeTradeIdeaInput({ symbol: "BTC", currentMarkPrice: 100000 }),
+      normalizeRecentHyperliquidTrades(emptyFixture),
+    );
+    expect(idea.recommendation.action).toBe("wait");
+    expect(idea.tradeIdea.canApply).toBe(false);
+    expect(JSON.stringify(idea)).not.toContain("walletAddress");
   });
 });

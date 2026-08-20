@@ -10,10 +10,17 @@ import {
   buildTradeReviewReport,
   renderTradeReviewMarkdown,
 } from "../src/review.js";
+import {
+  buildTradeIdea,
+  normalizeTradeIdeaInput,
+  renderTradeIdeaMarkdown,
+} from "../src/idea.js";
 
 const RECENT_TRADES_ARTIFACT = "artifacts/recent-hyperliquid-trades.json";
 const REVIEW_JSON_ARTIFACT = "artifacts/hyperliquid-trade-review.json";
 const REVIEW_MARKDOWN_ARTIFACT = "artifacts/hyperliquid-trade-review.md";
+const IDEA_JSON_ARTIFACT = "artifacts/hyperliquid-trade-idea.json";
+const IDEA_MARKDOWN_ARTIFACT = "artifacts/hyperliquid-trade-idea.md";
 
 export const getRecentHyperliquidTradesWorkflow = defineWorkflow({
   name: "get-recent-hyperliquid-trades",
@@ -89,6 +96,44 @@ export const reviewRecentHyperliquidTradesWorkflow = defineWorkflow({
         REVIEW_MARKDOWN_ARTIFACT,
       ],
       metadata: { report },
+    };
+  },
+});
+
+export const generateTradeIdeaWorkflow = defineWorkflow({
+  name: "generate-trade-idea",
+  description: "Create a non-executing trade idea grounded in fresh owner-bound fills.",
+  async run(ctx, rawInput) {
+    const input = normalizeTradeIdeaInput(rawInput);
+    const recent = await ctx.tool("ducky.hyperliquid.read_recent_fills", () =>
+      readRecentHyperliquidTrades({ lookbackHours: 24, environment: input.environment }),
+    );
+    const idea = buildTradeIdea(input, recent);
+    const markdown = await ctx.model("format-hyperliquid-trade-idea", async () =>
+      renderTradeIdeaMarkdown(idea),
+    );
+    await Promise.all([
+      writeArtifact(RECENT_TRADES_ARTIFACT, JSON.stringify(recent, null, 2)),
+      writeArtifact(IDEA_JSON_ARTIFACT, JSON.stringify(idea, null, 2)),
+      writeArtifact(IDEA_MARKDOWN_ARTIFACT, markdown),
+    ]);
+    ctx.trace.event("hyperliquid.trade-idea.completed", {
+      symbol: input.symbol,
+      environment: recent.environment,
+      tradeCount: recent.tradeCount,
+      decision: idea.recommendation.action,
+    });
+    ctx.trace.artifact(IDEA_JSON_ARTIFACT, { symbol: input.symbol });
+    ctx.trace.artifact(IDEA_MARKDOWN_ARTIFACT, { symbol: input.symbol });
+    return {
+      text: markdown,
+      intent: "generate_trade_idea",
+      artifactRefs: [
+        RECENT_TRADES_ARTIFACT,
+        IDEA_JSON_ARTIFACT,
+        IDEA_MARKDOWN_ARTIFACT,
+      ],
+      metadata: { idea },
     };
   },
 });

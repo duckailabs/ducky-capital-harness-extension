@@ -23,6 +23,7 @@ import {
 } from "./schemas.js";
 import {
   getRecentHyperliquidTradesWorkflow,
+  generateTradeIdeaWorkflow,
   reviewRecentHyperliquidTradesWorkflow,
 } from "./workflows.js";
 
@@ -71,6 +72,29 @@ const actions = [
     setup: integrationSetup,
     mcp: { enabled: false },
     schedule: { enabled: true, allowAdHoc: true },
+    model: {
+      provider: "openpond-managed",
+      required: true,
+      temperature: 0.2,
+      maxOutputTokens: 2000,
+    },
+  }),
+  action("generate-trade-idea", {
+    label: "Generate trade idea",
+    description: "Use a fresh owner-bound fill window and supplied market context to create a non-executing trade idea.",
+    target: { kind: "workflow", workflow: generateTradeIdeaWorkflow },
+    visibility: "end_user",
+    timeoutSeconds: 300,
+    inputSchema: "GenerateTradeIdeaInput",
+    outputArtifacts: [
+      "artifacts/recent-hyperliquid-trades.json",
+      "artifacts/hyperliquid-trade-idea.json",
+      "artifacts/hyperliquid-trade-idea.md",
+    ],
+    approval: { mode: "never", reason: "Read-only research output with no signing or order placement." },
+    setup: integrationSetup,
+    mcp: { enabled: false },
+    schedule: { enabled: false, allowAdHoc: true },
     model: {
       provider: "openpond-managed",
       required: true,
@@ -128,6 +152,7 @@ export default defineAgentProject({
   workflows: [
     getRecentHyperliquidTradesWorkflow,
     reviewRecentHyperliquidTradesWorkflow,
+    generateTradeIdeaWorkflow,
   ],
   editable: editable({
     enabled: true,
