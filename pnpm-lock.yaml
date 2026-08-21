@@ -11,8 +11,8 @@ importers:
   agents/hyperliquid-trade-reviewer:
     dependencies:
       openpond-agent-sdk:
-        specifier: file:vendor/openpond-agent-sdk-0.1.2.tgz
-        version: file:agents/hyperliquid-trade-reviewer/vendor/openpond-agent-sdk-0.1.2.tgz
+        specifier: ^0.1.2
+        version: 0.1.2
     devDependencies:
       '@types/node':
         specifier: 24.13.3
@@ -1424,12 +1424,6 @@ packages:
 
   openpond-agent-sdk@0.1.2:
     resolution: {integrity: sha512-30NdoQqPizHPL2y+wVx2KqJigr+4wuBS93zDqpbPq12YPV4oNrIgm3/2l+9sbxTygX/lLMvYOROHrxhDK0rChw==}
-    engines: {node: '>=22.14.0 <25'}
-    hasBin: true
-
-  openpond-agent-sdk@file:agents/hyperliquid-trade-reviewer/vendor/openpond-agent-sdk-0.1.2.tgz:
-    resolution: {integrity: sha512-30NdoQqPizHPL2y+wVx2KqJigr+4wuBS93zDqpbPq12YPV4oNrIgm3/2l+9sbxTygX/lLMvYOROHrxhDK0rChw==, tarball: file:agents/hyperliquid-trade-reviewer/vendor/openpond-agent-sdk-0.1.2.tgz}
-    version: 0.1.2
     engines: {node: '>=22.14.0 <25'}
     hasBin: true
 
@@ -3607,13 +3601,6 @@ snapshots:
     optional: true
 
   openpond-agent-sdk@0.1.2:
-    dependencies:
-      esbuild: 0.28.1
-      tsx: 4.23.1
-      yaml: 2.9.0
-      zod: 4.4.3
-
-  openpond-agent-sdk@file:agents/hyperliquid-trade-reviewer/vendor/openpond-agent-sdk-0.1.2.tgz:
     dependencies:
       esbuild: 0.28.1
       tsx: 4.23.1
