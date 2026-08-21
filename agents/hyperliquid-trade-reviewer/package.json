@@ -4,8 +4,10 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "openpond-agent-sdk": "file:vendor/openpond-agent-sdk-0.1.2.tgz"
+  },
+  "devDependencies": {
     "@types/node": "24.13.3",
-    "openpond-agent-sdk": "file:vendor/openpond-agent-sdk-0.1.2.tgz",
     "typescript": "5.9.3"
   },
   "scripts": {
