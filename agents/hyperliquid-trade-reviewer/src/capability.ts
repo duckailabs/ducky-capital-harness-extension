@@ -93,18 +93,31 @@ export async function readRecentHyperliquidTrades(
   input: TradeReviewInput,
   runtime: CapabilityRuntime = capabilityRuntimeFromEnv(),
 ): Promise<RecentHyperliquidTrades> {
-  const response = await runtime.fetch(runtime.proxyUrl, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${runtime.proxyToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      capability: RECENT_HYPERLIQUID_TRADES_CAPABILITY,
-      value: input,
-    }),
-    redirect: "error",
-  });
+  let response: Response;
+  try {
+    response = await runtime.fetch(runtime.proxyUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${runtime.proxyToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        capability: RECENT_HYPERLIQUID_TRADES_CAPABILITY,
+        value: input,
+      }),
+      redirect: "error",
+    });
+  } catch (error) {
+    const cause = error instanceof Error ? error.cause : null;
+    const causeRecord =
+      cause && typeof cause === "object" ? (cause as Record<string, unknown>) : null;
+    const detail =
+      (causeRecord && typeof causeRecord.code === "string" && causeRecord.code) ||
+      (cause instanceof Error && cause.message) ||
+      (error instanceof Error && error.message) ||
+      "request_failed";
+    throw new Error(`Recent-trade capability request failed: ${detail}.`);
+  }
   if (!response.ok) {
     throw new Error(`Recent-trade capability failed with HTTP ${response.status}.`);
   }
