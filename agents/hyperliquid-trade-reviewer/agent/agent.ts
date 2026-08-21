@@ -158,7 +158,7 @@ export default defineAgentProject({
     enabled: true,
     sourceOfTruth: "agent-source",
     policyDiscovery: {
-      command: "bun run agent:inspect",
+      command: "openpond agent inspect --json",
       runAfter: "source-materialized",
     },
     allowedPaths: [
@@ -170,11 +170,11 @@ export default defineAgentProject({
       "tsconfig.json",
     ],
     requiredChecks: [
-      "bun run typecheck",
-      "bun run test",
-      "bun run agent:build",
-      "bun run agent:validate",
-      "bun run agent:eval",
+      "pnpm typecheck",
+      "pnpm test",
+      "pnpm agent:build",
+      "pnpm agent:validate",
+      "pnpm agent:eval",
     ],
     defaultResultMode: "patch_only",
   }),
