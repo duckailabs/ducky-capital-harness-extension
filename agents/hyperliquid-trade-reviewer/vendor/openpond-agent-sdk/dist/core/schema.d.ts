@@ -1,0 +1,12 @@
+import type { ActionDefinition, ActionImplementationDefinition, AgentChatInput, LocalAgentDefinition, RemoteAgentReferenceDefinition, ToolDefinition, WorkflowDefinition } from "../index";
+export declare function workflowName(workflow: WorkflowDefinition | string): string;
+export declare function localAgentId(agent: LocalAgentDefinition | string): string;
+export declare function remoteAgentId(agent: RemoteAgentReferenceDefinition | string): string;
+export declare function toolName(tool: ToolDefinition | string): string;
+export declare function actionId(action: ActionDefinition): string;
+export declare function actionLabel(action: ActionDefinition): string;
+export declare function inferActionImplementation(action: ActionDefinition): ActionImplementationDefinition;
+export declare function schemaLabel(schema: unknown): string | null;
+export declare function isRecord(value: unknown): value is Record<string, unknown>;
+export declare function isChannelId(value: unknown): value is AgentChatInput["channel"];
+export declare function normalizeInput(input: Record<string, unknown> | undefined): AgentChatInput;

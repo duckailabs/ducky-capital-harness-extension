@@ -5,7 +5,7 @@
   "type": "module",
   "dependencies": {
     "@types/node": "24.13.3",
-    "openpond-agent-sdk": "file:vendor/openpond-agent-sdk-0.1.2.tgz",
+    "openpond-agent-sdk": "file:vendor/openpond-agent-sdk",
     "typescript": "5.9.3"
   },
   "scripts": {
